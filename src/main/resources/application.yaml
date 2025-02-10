@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: go_linguage_server
+  datasource:
+    url: jdbc:postgresql://localhost:5432/golinguage
+    username: postgres
+    password: Sohappy212
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
