@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import tech.trvihnls.models.dtos.auth.SignUpResponse;
 import tech.trvihnls.models.entities.User;
 import tech.trvihnls.repositories.UserRepository;
 import tech.trvihnls.services.UserService;

@@ -1,5 +1,6 @@
 package tech.trvihnls.services.impl;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -14,7 +15,9 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -22,8 +25,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tech.trvihnls.exceptions.AppException;
+import tech.trvihnls.models.entities.InvalidatedToken;
 import tech.trvihnls.models.entities.Role;
 import tech.trvihnls.models.entities.User;
+import tech.trvihnls.services.InvalidatedTokenService;
 import tech.trvihnls.services.JwtService;
 import tech.trvihnls.utils.AppConstants;
 import tech.trvihnls.utils.ErrorCode;
@@ -39,6 +44,8 @@ public class JwtServiceImpl implements JwtService {
     private final long validAccessTokenDuration = 3600;
 
     private byte[] secretKeyBytes;
+
+    private final InvalidatedTokenService invalidatedTokenService;
 
     @PostConstruct
     public void init() {
@@ -96,16 +103,93 @@ public class JwtServiceImpl implements JwtService {
                 .collect(Collectors.joining(" "));
     }
 
+    /**
+     * Verify the token
+     *
+     * @param token the string token
+     * @return true if the token is valid, otherwise return false
+     */
     @Override
     public boolean verifyToken(String token) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'verifyToken'");
+        if (token == null || token.isEmpty()) {
+            log.debug("Token is null or empty");
+            return false;
+        }
+
+        try {
+            // Parse the JWT
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            // Verify the signature
+            JWSVerifier verifier = new MACVerifier(secretKeyBytes);
+            if (!signedJWT.verify(verifier)) {
+                log.debug("JWT signature verification failed");
+                return false;
+            }
+
+            // Get JWT claims
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+            String jwtId = claimsSet.getJWTID();
+
+            // Check if token is in blacklist
+            if (invalidatedTokenService.isTokenInvalidated(jwtId)) {
+                log.debug("Token is in the invalidated tokens list: {}", jwtId);
+                return false;
+            }
+
+            // Check expiration
+            Date expirationTime = claimsSet.getExpirationTime();
+            if (expirationTime == null || expirationTime.before(new Date())) {
+                log.debug("Token is expired");
+                return false;
+            }
+
+            return true;
+
+        } catch (ParseException e) {
+            log.warn("Failed to parse JWT token", e);
+            return false;
+        } catch (JOSEException e) {
+            log.warn("Failed to verify JWT token signature", e);
+            return false;
+        } catch (Exception e) {
+            log.error("Unexpected error during token verification", e);
+            return false;
+        }
     }
 
+    /**
+     * Invalidate a token (add to blacklist)
+     *
+     * @param token the token to invalidate
+     * @return true if successful, false otherwise
+     */
     @Override
-    public void invalidateToken(String token) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'invalidateToken'");
+    public boolean invalidateToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+
+            String jwtId = claimsSet.getJWTID();
+            Date expirationTime = claimsSet.getExpirationTime();
+
+            // Save to invalidated tokens repository
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .jwtId(jwtId)
+                    .expirationTime(expirationTime)
+                    .build();
+
+            invalidatedTokenService.create(invalidatedToken);
+            log.debug("Token invalidated successfully: {}", jwtId);
+
+            return true;
+        } catch (ParseException e) {
+            log.error("Failed to parse token during invalidation", e);
+            return false;
+        } catch (Exception e) {
+            log.error("Failed to invalidate token", e);
+            return false;
+        }
     }
 
 }
