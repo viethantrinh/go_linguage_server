@@ -27,7 +27,19 @@ spring:
   output:
     ansi:
       enabled: always
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 662065393473-e40laortuec76203hspjr7slaeh7uj47.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/api/auth/google
+            scope:
+              - email
+              - profile
 jwt:
   secret-key: 78040db429b610814e9f299ef8590b28be75aeacd9ff1f3e53bc8b72f4c0c88c
-
-    
+google:
+  client-id: 662065393473-e40laortuec76203hspjr7slaeh7uj47.apps.googleusercontent.com
+  client-secret: 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

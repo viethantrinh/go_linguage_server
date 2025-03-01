@@ -32,7 +32,7 @@ public class ApiResponse<T> {
 
     private ErrorResponse errorResponse;
 
-    private T data;
+    private T result;
 
     @Getter
     @Setter

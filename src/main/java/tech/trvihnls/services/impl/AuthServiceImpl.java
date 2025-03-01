@@ -1,5 +1,7 @@
 package tech.trvihnls.services.impl;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +9,9 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -14,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import tech.trvihnls.exceptions.AppException;
 import tech.trvihnls.exceptions.ResourceNotFoundException;
+import tech.trvihnls.models.dtos.auth.GoogleAuthRequest;
+import tech.trvihnls.models.dtos.auth.GoogleAuthResponse;
 import tech.trvihnls.models.dtos.auth.SignInRequest;
 import tech.trvihnls.models.dtos.auth.SignInResponse;
 import tech.trvihnls.models.dtos.auth.SignOutRequest;
@@ -40,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final RoleService roleService;
     private final InvalidatedTokenService invalidatedTokenService;
+    private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
     @Override
     public SignInResponse signIn(SignInRequest request) {
@@ -123,4 +131,64 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Override
+    public GoogleAuthResponse authenticateWithGoogle(GoogleAuthRequest request) {
+        try {
+            // Verify the Google ID token
+            GoogleIdToken idToken = googleIdTokenVerifier.verify(request.getIdToken());
+
+            if (idToken == null) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+
+            // Extract user info from token
+            Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+
+            User user;
+            // Check if user already exists
+            if (userService.isUserWithEmailExisted(email)) {
+                // User exists, retrieve their details
+                user = userService.findByEmail(email)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                
+                if (!user.isEnabled()) {
+                    throw new AppException(ErrorCode.UNAUTHENTICATED);
+                }
+            } else {
+                // User doesn't exist, create new account
+                Role role = roleService.findByName(RoleEnum.ROLE_USER.getName())
+                        .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.ROLE_NOT_EXISTED));
+
+                // Generate a random secure password for Google users
+                String randomPassword = generateSecurePassword();
+
+                user = User.builder()
+                        .name(name)
+                        .email(email)
+                        .password(passwordEncoder.encode(randomPassword))
+                        .enabled(true)
+                        .roles(List.of(role))
+                        .build();
+
+                user = userService.createSignUpUser(user);
+                log.info("Created new user account via Google authentication: {}", email);
+            }
+
+            // Generate JWT token for the user
+            String token = jwtService.generateToken(user);
+
+            return GoogleAuthResponse.builder()
+                    .token(token)
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            log.error("Error verifying Google token", e);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
+
+    private String generateSecurePassword() {
+        return java.util.UUID.randomUUID().toString();
+    }
 }

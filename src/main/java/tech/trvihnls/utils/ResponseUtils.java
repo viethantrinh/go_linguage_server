@@ -14,7 +14,7 @@ public class ResponseUtils {
                 .message(successCode.getMessage())
                 .timestamp(LocalDateTime.now())
                 .errorResponse(null)
-                .data(data)
+                .result(data)
                 .build();
         return new ResponseEntity<ApiResponse<T>>(response, successCode.getStatus());
     }
@@ -24,7 +24,7 @@ public class ResponseUtils {
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .timestamp(LocalDateTime.now())
-                .data(null)
+                .result(null)
                 .errorResponse(errorResponse)
                 .build();
 
