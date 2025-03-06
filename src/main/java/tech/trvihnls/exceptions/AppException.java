@@ -1,7 +1,7 @@
 package tech.trvihnls.exceptions;
 
 import lombok.Getter;
-import tech.trvihnls.utils.ErrorCode;
+import tech.trvihnls.utils.enums.ErrorCode;
 
 @Getter
 public class AppException extends RuntimeException {

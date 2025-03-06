@@ -1,11 +1,12 @@
 package tech.trvihnls.utils;
 
-import java.time.LocalDateTime;
-
 import org.springframework.http.ResponseEntity;
-
 import tech.trvihnls.models.dtos.base.ApiResponse;
 import tech.trvihnls.models.dtos.base.ApiResponse.ErrorResponse;
+import tech.trvihnls.utils.enums.ErrorCode;
+import tech.trvihnls.utils.enums.SuccessCode;
+
+import java.time.LocalDateTime;
 
 public class ResponseUtils {
     public static <T> ResponseEntity<ApiResponse<T>> success(SuccessCode successCode, T data) {

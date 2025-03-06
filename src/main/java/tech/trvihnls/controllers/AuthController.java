@@ -1,26 +1,17 @@
 package tech.trvihnls.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
-import tech.trvihnls.models.dtos.auth.GoogleAuthRequest;
-import tech.trvihnls.models.dtos.auth.GoogleAuthResponse;
-import tech.trvihnls.models.dtos.auth.IntrospectTokenRequest;
-import tech.trvihnls.models.dtos.auth.IntrospectTokenResponse;
-import tech.trvihnls.models.dtos.auth.SignInRequest;
-import tech.trvihnls.models.dtos.auth.SignInResponse;
-import tech.trvihnls.models.dtos.auth.SignOutRequest;
-import tech.trvihnls.models.dtos.auth.SignUpRequest;
-import tech.trvihnls.models.dtos.auth.SignUpResponse;
+import tech.trvihnls.models.dtos.auth.*;
 import tech.trvihnls.models.dtos.base.ApiResponse;
 import tech.trvihnls.services.AuthService;
 import tech.trvihnls.services.JwtService;
 import tech.trvihnls.utils.ResponseUtils;
-import tech.trvihnls.utils.SuccessCode;
+import tech.trvihnls.utils.enums.SuccessCode;
 
 @RestController
 @RequestMapping("/auth")

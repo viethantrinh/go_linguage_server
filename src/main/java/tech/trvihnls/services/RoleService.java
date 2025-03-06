@@ -1,8 +1,8 @@
 package tech.trvihnls.services;
 
-import java.util.Optional;
-
 import tech.trvihnls.models.entities.Role;
+
+import java.util.Optional;
 
 public interface RoleService {
     Optional<Role> findByName(String name);

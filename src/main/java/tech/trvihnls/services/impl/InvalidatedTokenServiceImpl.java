@@ -1,8 +1,7 @@
 package tech.trvihnls.services.impl;
 
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import tech.trvihnls.models.entities.InvalidatedToken;
 import tech.trvihnls.repositories.InvalidatedTokenRepository;
 import tech.trvihnls.services.InvalidatedTokenService;

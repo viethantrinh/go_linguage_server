@@ -1,9 +1,6 @@
 package tech.trvihnls.configs;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,11 +14,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import lombok.RequiredArgsConstructor;
 import tech.trvihnls.configs.jwt.CustomJwtDecoder;
 import tech.trvihnls.configs.jwt.JwtAccessDeniedHandler;
 import tech.trvihnls.configs.jwt.JwtAuthenticationEntryPointHandler;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -48,6 +47,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(authorizationHandler))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/payment/webhook").permitAll()
                         .anyRequest().authenticated());
         return http.build();
     }

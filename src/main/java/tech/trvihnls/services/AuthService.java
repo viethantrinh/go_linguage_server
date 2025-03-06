@@ -1,12 +1,6 @@
 package tech.trvihnls.services;
 
-import tech.trvihnls.models.dtos.auth.GoogleAuthRequest;
-import tech.trvihnls.models.dtos.auth.GoogleAuthResponse;
-import tech.trvihnls.models.dtos.auth.SignInRequest;
-import tech.trvihnls.models.dtos.auth.SignInResponse;
-import tech.trvihnls.models.dtos.auth.SignOutRequest;
-import tech.trvihnls.models.dtos.auth.SignUpRequest;
-import tech.trvihnls.models.dtos.auth.SignUpResponse;
+import tech.trvihnls.models.dtos.auth.*;
 
 public interface AuthService {
     SignInResponse signIn(SignInRequest request);

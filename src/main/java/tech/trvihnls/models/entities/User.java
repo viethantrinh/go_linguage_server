@@ -1,18 +1,10 @@
 package tech.trvihnls.models.entities;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -23,17 +15,44 @@ import lombok.Setter;
 @Table(name = "tbl_user")
 public class User extends BaseEntity {
 
+    @Column(name = "name", length = 64)
     private String name;
+
+    @Column(name = "email", length = 128, nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password", length = 256, unique = true)
     private String password;
-    private boolean enabled;
+
+    @Column(name = "image_url", length = 256, unique = true)
+    private String imageUrl;
+
+    @Builder.Default
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
+    @Builder.Default
+    @Column(name = "total_streak_points")
+    private int totalStreakPoints = 0;
+
+    @Builder.Default
+    @Column(name = "total_xp_points")
+    private int totalXPPoints = 0;
+
+    @Builder.Default
+    @Column(name = "total_gem_points")
+    private int totalGemPoints = 0;
 
     @Builder.Default
     @ManyToMany
     @JoinTable(
-        name = "tbl_user_role",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "tbl_user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles = new ArrayList<>(); // what are roles this user have
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<UserSubscription> userSubscriptions = new ArrayList<>(); // subscriptions list of this user have
 }

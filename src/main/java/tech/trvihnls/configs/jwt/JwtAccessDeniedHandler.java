@@ -1,25 +1,23 @@
 package tech.trvihnls.configs.jwt;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import tech.trvihnls.models.dtos.base.ApiResponse;
 import tech.trvihnls.models.dtos.base.ApiResponse.ErrorResponse;
-import tech.trvihnls.utils.ErrorCode;
 import tech.trvihnls.utils.ResponseUtils;
+import tech.trvihnls.utils.enums.ErrorCode;
+
+import java.io.IOException;
+import java.util.List;
 
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {

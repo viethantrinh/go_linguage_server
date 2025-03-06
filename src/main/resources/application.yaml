@@ -43,3 +43,6 @@ jwt:
 google:
   client-id: 662065393473-e40laortuec76203hspjr7slaeh7uj47.apps.googleusercontent.com
   client-secret: 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
+stripe:
+  secret-key: sk_test_51QzNZxIYP7o7tjuBqKpSvwYVj4ZLzxFs6Wi3RXfpgHL4aP6jFYBdAi643uxz5w93gfqFGoGkHd5yO8prJvTxfKUz00ISpeg7Qv
+  web-hook-key: whsec_d5ea053ef8e234a74dfcd59f8bedaa2bd276d301fee2c2866023a3d08adc759d

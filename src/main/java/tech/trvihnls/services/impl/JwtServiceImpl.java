@@ -1,29 +1,15 @@
 package tech.trvihnls.services.impl;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import tech.trvihnls.exceptions.AppException;
 import tech.trvihnls.models.entities.InvalidatedToken;
 import tech.trvihnls.models.entities.Role;
@@ -31,7 +17,15 @@ import tech.trvihnls.models.entities.User;
 import tech.trvihnls.services.InvalidatedTokenService;
 import tech.trvihnls.services.JwtService;
 import tech.trvihnls.utils.AppConstants;
-import tech.trvihnls.utils.ErrorCode;
+import tech.trvihnls.utils.enums.ErrorCode;
+
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private final long validAccessTokenDuration = 3600;
+    private final long validAccessTokenDuration = 100000;
 
     private byte[] secretKeyBytes;
 

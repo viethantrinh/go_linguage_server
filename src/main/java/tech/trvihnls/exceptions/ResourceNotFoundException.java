@@ -1,6 +1,6 @@
 package tech.trvihnls.exceptions;
 
-import tech.trvihnls.utils.ErrorCode;
+import tech.trvihnls.utils.enums.ErrorCode;
 
 public class ResourceNotFoundException extends AppException {
 
