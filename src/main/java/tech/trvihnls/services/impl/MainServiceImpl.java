@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import tech.trvihnls.exceptions.AppException;
 import tech.trvihnls.exceptions.ResourceNotFoundException;
 import tech.trvihnls.models.dtos.level.LevelResponse;
 import tech.trvihnls.models.dtos.main.HomeResponse;
@@ -16,8 +15,10 @@ import tech.trvihnls.utils.SecurityUtils;
 import tech.trvihnls.utils.enums.ErrorCode;
 import tech.trvihnls.utils.enums.PaymentStatus;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service

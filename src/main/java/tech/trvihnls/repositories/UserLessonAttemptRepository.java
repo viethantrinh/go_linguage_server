@@ -7,7 +7,6 @@ import tech.trvihnls.models.entities.UserLessonAttempt;
 import tech.trvihnls.models.entities.UserLessonAttemptId;
 
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface UserLessonAttemptRepository extends JpaRepository<UserLessonAttempt, UserLessonAttemptId> {
