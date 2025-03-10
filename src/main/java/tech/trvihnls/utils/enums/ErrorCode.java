@@ -14,10 +14,12 @@ public enum ErrorCode {
     ROLE_NOT_EXISTED(5004, HttpStatus.NOT_FOUND, "Error caused by role not exsited in system"),
     UNAUTHORIZED(5005, HttpStatus.UNAUTHORIZED, "User not have permisson to access"),
     GOOGLE_AUTH_FAILED(5006, HttpStatus.UNAUTHORIZED, "Google authentication failed"),
-    INVALID_GOOGLE_TOKEN(5007, HttpStatus.BAD_REQUEST, "Invalid Google token"), 
+    INVALID_GOOGLE_TOKEN(5007, HttpStatus.BAD_REQUEST, "Invalid Google token"),
     USER_NOT_EXISTED(5008, HttpStatus.NOT_FOUND, "Error caused by user not existed"),
     SUBSCRIPTION_NOT_EXISTED(5009, HttpStatus.NOT_FOUND, "Error caused by subscription plan not existed"),
-    PAYMENT_ERROR(5010, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by stripe exception");
+    PAYMENT_ERROR(5010, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by stripe exception"),
+    UPLOAD_RESOURCE_FAILED(5011, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by uploading resource failed"),
+    ;
 
     private final int code;
     private final HttpStatus status;

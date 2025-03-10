@@ -62,7 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public StripeSubscriptionResponse createStripeSubscription(StripeSubscriptionRequest request) {
-        long userId = Long.parseLong(Objects.requireNonNull(SecurityUtils.getCurrentUserId()));
+        long userId = Objects.requireNonNull(SecurityUtils.getCurrentUserId());
         User user = userService.findById(userId);
         Subscription subscription = subscriptionService.findById(request.getSubscriptionId());
 

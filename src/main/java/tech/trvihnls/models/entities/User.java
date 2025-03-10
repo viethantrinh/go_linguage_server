@@ -40,8 +40,8 @@ public class User extends BaseEntity {
     private int totalXPPoints = 0;
 
     @Builder.Default
-    @Column(name = "total_gem_points")
-    private int totalGemPoints = 0;
+    @Column(name = "total_go_points")
+    private int totalGoPoints = 0;
 
     @Builder.Default
     @ManyToMany

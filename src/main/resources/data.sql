@@ -1,6 +1,6 @@
 -- USER DATA
 INSERT INTO tbl_user (name, email, password, image_url, enabled, total_streak_points, total_xp_points,
-                      total_gem_points, created_at, updated_at)
+                      total_go_points, created_at, updated_at)
 VALUES ('han', 'hntrnn12@gmail.com', '$2a$10$FOozZpsLs4czytM1kxKpR.46tcuu5E5L5EaUrDAnIM0vDcjyCZBRe', 'null-1', true, 0,
         0, 0, now(), null),
        ('hang', 'hntrnn13@gmail.com', '$2a$10$rSCAMW7Thggyo3OtawWXPe3b0RDkXtsSs2IBk2hMQXDy2PqW8UZ1.', 'null-2', true, 0,

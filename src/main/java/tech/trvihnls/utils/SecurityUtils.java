@@ -23,9 +23,9 @@ public class SecurityUtils {
     /**
      * Get the current user ID
      */
-    public static String getCurrentUserId() {
+    public static Long getCurrentUserId() {
         Authentication auth = getAuthentication();
-        return auth != null ? auth.getName() : null;
+        return auth != null ? Long.parseLong(auth.getName()) : null;
     }
     
     /**
