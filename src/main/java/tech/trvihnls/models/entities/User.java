@@ -24,9 +24,6 @@ public class User extends BaseEntity {
     @Column(name = "password", length = 256, unique = true)
     private String password;
 
-    @Column(name = "image_url", length = 256, unique = true)
-    private String imageUrl;
-
     @Builder.Default
     @Column(name = "enabled")
     private boolean enabled = true;
@@ -55,4 +52,8 @@ public class User extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<UserSubscription> userSubscriptions = new ArrayList<>(); // subscriptions list of this user have
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<UserLessonAttempt> userLessonAttempts = new ArrayList<>(); // lessons attempts of this user
 }

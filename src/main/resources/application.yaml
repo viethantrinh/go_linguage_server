@@ -8,14 +8,20 @@ spring:
     url: jdbc:postgresql://localhost:5432/golinguage
     username: postgres
     password: Sohappy212
+#    url: jdbc:postgresql://db.rvyktgjvxqfqfiyvevdu.supabase.co:5432/postgres
+#    username: postgres
+#    password: Sohappy212
+#    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+#    username: ${DATABASE_USERNAME}
+#    password: ${DATABASE_PASSWORD}
   jpa:
     database: postgresql
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
-        '[show_sql]': true
-        '[format_sql]': true
+        '[show_sql]': false
+        '[format_sql]': false
     defer-datasource-initialization: true
   sql:
     init:

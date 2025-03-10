@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "`invalidated_token`")
+@Table(name = "`tbl_invalidated_token`")
 public class InvalidatedToken {
     @Id
     @Column(name = "jwt_id")
