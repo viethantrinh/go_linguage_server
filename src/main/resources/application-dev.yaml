@@ -5,12 +5,9 @@ spring:
   application:
     name: go_linguage_server
   datasource:
-#    url: jdbc:postgresql://localhost:5432/golinguage
-#    username: postgres
-#    password: Sohappy212
-    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/golinguage
+    username: postgres
+    password: Sohappy212
   jpa:
     database: postgresql
     hibernate:
@@ -37,7 +34,7 @@ spring:
           google:
             client-id: 667301006594-ea0a5uesrdv8jedq2egk7huj4vnrdmna.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: https://go-linguage-server-9ab98bbccd59.herokuapp.com/api/auth/google
+            redirect-uri: http://localhost:8080/api/auth/google
             scope:
               - email
               - profile
