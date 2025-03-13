@@ -35,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private final long validAccessTokenDuration = 100000;
+    private final long validAccessTokenDuration = 100_000_000;
 
     private byte[] secretKeyBytes;
 
