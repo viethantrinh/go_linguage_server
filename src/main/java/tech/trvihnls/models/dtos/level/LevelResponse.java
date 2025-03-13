@@ -12,12 +12,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "name", "imageUrl", "totalUserXPPoints", "topics"})
+@JsonPropertyOrder({"id", "name", "imageUrl", "totalUserXPPoints", "displayOrder", "topics"})
 public class LevelResponse {
     private long id;
     private String name;
-    private int displayOrder;
     private int totalUserXPPoints;
+    private int displayOrder;
 
     @Builder.Default
     private List<TopicResponse> topics = new ArrayList<>();

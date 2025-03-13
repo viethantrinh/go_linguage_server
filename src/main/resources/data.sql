@@ -40,7 +40,12 @@ VALUES -- 1, 2, 3, 4
     (1, 'Giới thiệu', 'chủ đề giới thiệu', 'http://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 1, false, now(), null),
     (1, 'Câu cơ bản', 'các loại câu cơ bản', 'http://res.cloudinary.com/golinguage/image/upload/v1741582254/8053962f-f5f2-4b8a-9084-6bba51b349e4.webp', 2, false, now(), null),
     (1, 'Số đếm & Gia đình', 'số đếm cơ bản và từ vựng về gia đình', 'http://res.cloudinary.com/golinguage/image/upload/v1741582247/bb930d26-15d2-443d-aa69-f0ba2f5a8dde.webp', 3, true, now(), null),
-    (1, 'Số đếm & Tập đếm', 'số đếm nâng cao', 'http://res.cloudinary.com/golinguage/image/upload/v1741582252/c4e87654-8186-4caf-8add-3cc63d3be9f7.webp', 4, true, now(), null);
+    (1, 'Số đếm & Tập đếm', 'số đếm nâng cao', 'http://res.cloudinary.com/golinguage/image/upload/v1741582252/c4e87654-8186-4caf-8add-3cc63d3be9f7.webp', 4, true, now(), null),
+    (2, 'Địa điểm & Vị trí', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859407/3ce77ae1-5af1-4988-9f4d-69134caa483b.webp', 1, true, now() + interval '1 hour', null),
+    (2, 'Dẫn đường', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859404/33488dc7-0db3-47a4-9757-99b3da461766.webp', 2, true, now() + interval '2 hour', null),
+    (2, 'Công việc & Nơi làm việc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859402/b1123965-60ce-4f1f-ae59-da768868ad6a.webp', 3, true, now() + interval '10 hour', null),
+    (2, 'Tâm trạng & Cảm xúc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859971/2e06f143-9b2a-4629-821c-e7c0450c2b64.webp', 4, true, now() + interval '6 hour', null)
+;
 
 -- LESSON DATA
 INSERT INTO tbl_lesson (topic_id, name, display_order, created_at, updated_at)

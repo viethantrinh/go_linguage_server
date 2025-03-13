@@ -5,11 +5,13 @@ import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.cloudinary.utils.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 
 //@SpringBootTest
+//@ActiveProfiles({"dev"})
+//@RequiredArgsConstructor
 public class CloudinaryTest {
 
 //    @Autowired

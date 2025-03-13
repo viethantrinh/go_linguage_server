@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "name", "imageUrl", "totalUserXPPoints", "isPremium"})
+@JsonPropertyOrder({"id", "name", "imageUrl", "totalUserXPPoints", "isPremium", "displayOrder"})
 public class TopicResponse {
     private long id;
     private String name;
@@ -16,5 +16,4 @@ public class TopicResponse {
     private int displayOrder;
     private boolean isPremium;
     private int totalUserXPPoints;
-
 }
