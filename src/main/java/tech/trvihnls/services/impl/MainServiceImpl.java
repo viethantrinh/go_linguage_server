@@ -80,7 +80,7 @@ public class MainServiceImpl implements MainService {
                         .name(topic.getName())
                         .imageUrl(topic.getImageUrl())
                         .displayOrder(topic.getDisplayOrder())
-                        .isPremium(!isUserSubscribed) // if user is premium => unlock all topic by setting this to false
+                        .isPremium(level.getId() != 1 && level.getId() != 2 && !isUserSubscribed) // if user is premium => unlock all topic by setting this to false
                         .totalUserXPPoints(topicTotalXp)
                         .build();
 
