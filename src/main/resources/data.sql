@@ -169,7 +169,15 @@ VALUES
     -- 9
     (1, 3, 'Nối những thẻ này', 9, now(), null),
     -- 10
-    (1, 2, 'Lựa chọn câu trả lời đúng', 10, now(), null)
+    (1, 2, 'Lựa chọn câu trả lời đúng', 10, now(), null),
+    -- 11
+    (1, 4, 'Dịch câu này bằng cách sắp xếp', 11, now(), null),
+    -- 12
+    (1, 4, 'Dịch câu này bằng cách sắp xếp', 12, now(), null),
+    -- 13
+    (1, 4, 'Dịch câu này bằng cách sắp xếp', 13, now(), null),
+    -- 14
+    (1, 2, 'Lựa chọn câu trả lời đúng', 14, now(), null)
     ;
 
 -- VOCABULARY_EXERCISE DATA
@@ -192,33 +200,40 @@ VALUES
     -- 3
     (8, 3, null, 'word', 'vietnamese', 'english', now(), null),
     -- 4
-    (10, null, 2, 'sentence', 'english', 'english', now(), null)
+    (10, null, 2, 'sentence', 'english', 'english', now(), null),
+    -- 5
+    (14, null, 1, 'sentence', 'english', 'vietnamese', now(), null)
     ;
 
 -- MULTIPLE_CHOICE_OPTION DATA
 INSERT INTO tbl_multiple_choice_option
     (multiple_choice_exercise_id, word_id, sentence_id, option_type, is_correct, created_at, updated_at)
 VALUES
-    -- 1
+    -- 1 : id của multiple_choice_exercise_id
     (1, 1, null, 'word', true, now(), null),
     (1, 2, null, 'word', false, now(), null),
     (1, 3, null, 'word', false, now(), null),
     (1, 4, null, 'word', false, now(), null),
-    -- 2
+    -- 2 : id của multiple_choice_exercise_id
     (2, 4, null, 'word', false, now(), null),
     (2, 1, null, 'word', false, now(), null),
     (2, 2, null, 'word', true, now(), null),
     (2, 3, null, 'word', false, now(), null),
-    -- 3
+    -- 3 : id của multiple_choice_exercise_id
     (3, 2, null, 'word', false, now(), null),
     (3, 3, null, 'word', true, now(), null),
     (3, 4, null, 'word', false, now(), null),
     (3, 1, null, 'word', false, now(), null),
-    -- 4
+    -- 4 : id của multiple_choice_exercise_id
     (4, null, 1, 'sentence', false, now(), null),
     (4, null, 2, 'sentence', true, now(), null),
     (4, null, 3, 'sentence', false, now(), null),
-    (4, null, 4, 'sentence', false, now(), null)
+    (4, null, 4, 'sentence', false, now(), null),
+    -- 5 : id của multiple_choice_exercise_id
+    (5, null, 4, 'sentence', false, now(), null),
+    (5, null, 3, 'sentence', false, now(), null),
+    (5, null, 2, 'sentence', false, now(), null),
+    (5, null, 1, 'sentence', true, now(), null)
     ;
 
 -- MATCHING_EXERCISE DATA
@@ -243,4 +258,50 @@ VALUES
     (2, 1, now(), null),
     (2, 2, now(), null),
     (2, 4, now(), null)
+    ;
+
+-- WORD_ARRANGEMENT_EXERCISE DATA
+INSERT INTO tbl_word_arrangement_exercise
+    (sentence_id, exercise_id, source_language, target_language, created_at, updated_at)
+VALUES
+    -- 1
+    (1, 11, 'english', 'vietnamese', now(), null),
+    -- 2
+    (2, 12, 'english', 'vietnamese', now(), null),
+    -- 3
+    (3, 13, 'vietnamese', 'english', now(), null)
+    ;
+
+-- WORD_ARRANGEMENT_OPTION DATA
+INSERT INTO tbl_word_arrangement_option
+    (word_arrangement_exercise_id, word_text, is_distractor, correct_position, created_at, updated_at)
+VALUES
+    -- 1 : id của word_arrangement_exercise_id
+    (1, 'nữ', false, 5, now(), null),
+    (1, 'người', false, 3, now(), null),
+    (1, 'ông', true, -1, now(), null),
+    (1, 'tiếng', true, -1, now(), null),
+    (1, 'một', false, 2, now(), null),
+    (1, 'nhật', true, -1, now(), null),
+    (1, 'đàn', true, -1, now(), null),
+    (1, 'phụ', false, 4, now(), null),
+    (1, 'tôi', false, 0, now(), null),
+    (1, 'là', false, 1, now(), null),
+    -- 2 : id của word_arrangement_exercise_id
+    (2, 'mười', true, -1, now(), null),
+    (2, 'ông', false, 5, now(), null),
+    (2, 'bạn', true, 0, now(), null),
+    (2, 'nhật', true, -1, now(), null),
+    (2, 'người', false, 3, now(), null),
+    (2, 'là', false, 1, now(), null),
+    (2, 'nữ', true, -1, now(), null),
+    (2, 'hai', true, -1, now(), null),
+    (2, 'phụ', true, -1, now(), null),
+    (2, 'đàn', false, 4, now(), null),
+    (2, 'một', false, 2, now(), null),
+    -- 3 : id của word_arrangement_exercise_id
+    (3, 'is', false, 1, now(), null),
+    (3, 'girl', false, 3, now(), null),
+    (3, 'she', false, 0, now(), null),
+    (3, 'a', false, 2, now(), null)
     ;

@@ -5,13 +5,12 @@ import org.springframework.stereotype.Service;
 import tech.trvihnls.commons.domains.*;
 import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
-import tech.trvihnls.commons.repositories.*;
+import tech.trvihnls.commons.repositories.ExerciseRepository;
+import tech.trvihnls.commons.repositories.LessonRepository;
+import tech.trvihnls.commons.repositories.UserLessonAttemptRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
-import tech.trvihnls.mobileapis.excercise.dtos.response.ExerciseDetailResponse;
-import tech.trvihnls.mobileapis.excercise.dtos.response.MatchingExerciseResponse;
-import tech.trvihnls.mobileapis.excercise.dtos.response.MultipleChoiceExerciseResponse;
-import tech.trvihnls.mobileapis.excercise.dtos.response.VocabularyExerciseResponse;
+import tech.trvihnls.mobileapis.excercise.dtos.response.*;
 import tech.trvihnls.mobileapis.lesson.dtos.response.LessonDetailResponse;
 import tech.trvihnls.mobileapis.topic.services.TopicService;
 
@@ -24,14 +23,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TopicServiceImpl implements TopicService {
 
-    private final TopicRepository topicRepository;
     private final LessonRepository lessonRepository;
     private final UserLessonAttemptRepository userLessonAttemptRepository;
     private final ExerciseRepository exerciseRepository;
-    private final VocabularyExerciseRepository vocabularyExerciseRepository;
-    private final WordRepository wordRepository;
-    private final MultipleChoiceExerciseRepository multipleChoiceExerciseRepository;
-    private final MultipleChoiceOptionRepository multipleChoiceOptionRepository;
 
     /**
      * Return all lessons and exercises inside that lesson for details
@@ -77,7 +71,9 @@ public class TopicServiceImpl implements TopicService {
                     exerciseDetails.add(buildMatchingExerciseResponse(e));
                 }
 
-
+                if (e.getWordArrangementExercise() != null) {
+                    exerciseDetails.add(buildWordArrangementExerciseResponse(e));
+                }
 
 //                if (e.get....Exercise() != null) {  // for another exercise type
 //
@@ -98,6 +94,7 @@ public class TopicServiceImpl implements TopicService {
 
         return lessonDetails;
     }
+
 
     private ExerciseDetailResponse<VocabularyExerciseResponse> buildVocabularyExerciseResponse(Exercise exercise) {
 
@@ -236,4 +233,46 @@ public class TopicServiceImpl implements TopicService {
                 .build();
     }
 
+    private ExerciseDetailResponse<WordArrangementExerciseResponse> buildWordArrangementExerciseResponse(Exercise exercise) {
+        WordArrangementExercise wordArrangementExercise = exercise.getWordArrangementExercise();
+
+        // Build sentence response
+        Sentence sentence = wordArrangementExercise.getSentence();
+
+        if (sentence == null) {
+            throw new ResourceNotFoundException(ErrorCodeEnum.RELATED_SENTENCES_NOT_EXISTED);
+        }
+
+        var sentenceResponse = WordArrangementExerciseResponse.SentenceResponse.builder()
+                .englishText(sentence.getEnglishText())
+                .vietnameseText(sentence.getVietnameseText())
+                .audioUrl(sentence.getAudioUrl())
+                .build();
+
+        // Build words
+        List<WordArrangementOption> wordArrangementOptions = wordArrangementExercise.getWordArrangementOptions();
+        List<WordArrangementExerciseResponse.WordResponse> wordResponses = new ArrayList<>();
+        for (WordArrangementOption w : wordArrangementOptions) {
+            WordArrangementExerciseResponse.WordResponse wordResponse = WordArrangementExerciseResponse.WordResponse.builder()
+                    .text(w.getWordText())
+                    .isDistractor(w.isDistractor())
+                    .correctPosition(w.getCorrectPosition())
+                    .build();
+            wordResponses.add(wordResponse);
+        }
+
+        WordArrangementExerciseResponse wordArrangementExerciseResponse = WordArrangementExerciseResponse.builder()
+                .sourceLanguage(wordArrangementExercise.getSourceLanguage())
+                .targetLanguage(wordArrangementExercise.getTargetLanguage())
+                .sentence(sentenceResponse)
+                .words(wordResponses)
+                .build();
+
+        return ExerciseDetailResponse.<WordArrangementExerciseResponse>builder()
+                .id(exercise.getId())
+                .instruction(exercise.getInstruction())
+                .displayOrder(exercise.getDisplayOrder())
+                .data(wordArrangementExerciseResponse)
+                .build();
+    }
 }
