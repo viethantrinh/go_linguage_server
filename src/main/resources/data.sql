@@ -177,7 +177,9 @@ VALUES
     -- 13
     (1, 4, 'Dịch câu này bằng cách sắp xếp', 13, now(), null),
     -- 14
-    (1, 2, 'Lựa chọn câu trả lời đúng', 14, now(), null)
+    (1, 2, 'Lựa chọn câu trả lời đúng', 14, now(), null),
+    -- 15
+    (1, 6, 'Nghe đoạn hội thoại sau và làm bài', 15, now(), null)
     ;
 
 -- VOCABULARY_EXERCISE DATA
@@ -305,3 +307,27 @@ VALUES
     (3, 'she', false, 0, now(), null),
     (3, 'a', false, 2, now(), null)
     ;
+
+-- DIALOGUE_EXERCISE DATA
+INSERT INTO tbl_dialogue_exercise
+(exercise_id, context, created_at, updated_at)
+VALUES
+    -- 1
+    (15, 'Hai người chào hỏi và tạm biệt', now(), null);
+
+-- DIALOGUE_EXERCISE_LINE DATA
+INSERT INTO tbl_dialogue_exercise_line
+(dialogue_exercise_id, speaker, english_text, vietnamese_text, audio_url, display_order, has_blank, blank_word, created_at, updated_at)
+VALUES
+    -- 1 : id của dialogue_exercise_id
+    (1, 'A', 'Good afternoon!', 'Chào anh!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138948/485df7a4-b664-4136-8a3d-b8ecac9150d4.ogg', 1, false, null, now(), null),
+    (1, 'B', 'Good afternoon!', 'Chào chị!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138950/7918b7a6-42c4-425d-8dbd-93e0edbc9ffb.ogg', 2, false, null, now(), null),
+    (1, 'A', 'How are you?', 'Anh khỏe không?', 'https://res.cloudinary.com/golinguage/video/upload/v1742138954/7b262b96-c1ee-45c5-8c68-20a0e0fc236f.ogg', 3, true, 'How', now(), null),
+    (1, 'B', 'I''m fine.', 'Tôi khỏe.', 'https://res.cloudinary.com/golinguage/video/upload/v1742138958/56200d35-37ac-4ecf-9bca-ee91bdc2d0fb.ogg', 4, false, null, now(), null),
+    (1, 'B', 'And you!', 'Còn chị?', 'https://res.cloudinary.com/golinguage/video/upload/v1742138944/9484b157-3b2f-4b84-9217-22015849b0af.ogg', 5, false, null, now(), null),
+    (1, 'A', 'I am fine.', 'Tôi khỏe.', 'https://res.cloudinary.com/golinguage/video/upload/v1742138957/cfe63a1f-d47b-48a0-8ec5-af9b50c86823.ogg', 6, true, 'I', now(), null),
+    (1, 'A', 'Thank you.', 'Cảm ơn', 'https://res.cloudinary.com/golinguage/video/upload/v1742138962/6f9726a6-1e71-4289-9e2f-5b20669b42fd.ogg', 7, false, null, now(), null),
+    (1, 'A', 'Goodbye!', 'Tạm biệt!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138946/cece8a42-875f-4691-b04f-3ca738042d57.ogg', 8, false, null, now(), null),
+    (1, 'B', 'See you later!', 'Hẹn gặp lại!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138960/755a8727-8ef1-4e9b-8e70-fbae7b92694b.ogg', 9, true, 'you', now(), null),
+    (1, 'A', 'Good luck!', 'Chúc may mắn!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138952/67109268-15b4-45f4-8db8-a5af5c726ac6.ogg', 10, false, null, now(), null)
+;

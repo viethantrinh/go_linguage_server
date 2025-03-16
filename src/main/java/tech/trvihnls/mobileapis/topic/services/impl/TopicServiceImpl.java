@@ -75,9 +75,9 @@ public class TopicServiceImpl implements TopicService {
                     exerciseDetails.add(buildWordArrangementExerciseResponse(e));
                 }
 
-//                if (e.get....Exercise() != null) {  // for another exercise type
-//
-//                }
+                if (e.getDialogueExercise() != null) {
+                    exerciseDetails.add(buildDialogueExerciseResponse(e));
+                }
             }
 
             LessonDetailResponse lessonDetailResponse = LessonDetailResponse.builder()
@@ -94,7 +94,6 @@ public class TopicServiceImpl implements TopicService {
 
         return lessonDetails;
     }
-
 
     private ExerciseDetailResponse<VocabularyExerciseResponse> buildVocabularyExerciseResponse(Exercise exercise) {
 
@@ -273,6 +272,39 @@ public class TopicServiceImpl implements TopicService {
                 .instruction(exercise.getInstruction())
                 .displayOrder(exercise.getDisplayOrder())
                 .data(wordArrangementExerciseResponse)
+                .build();
+    }
+
+    private ExerciseDetailResponse<DialogueExerciseResponse> buildDialogueExerciseResponse(Exercise exercise) {
+        DialogueExercise dialogueExercise = exercise.getDialogueExercise();
+
+        List<DialogueExerciseLine> dialogueExerciseLines = dialogueExercise.getDialogueExerciseLines();
+        List<DialogueExerciseResponse.DialogueLineResponse> dialogueLineResponses = new ArrayList<>();
+        for (DialogueExerciseLine d : dialogueExerciseLines) {
+            DialogueExerciseResponse.DialogueLineResponse dialogueLineResponse = DialogueExerciseResponse.DialogueLineResponse.builder()
+                    .speaker(d.getSpeaker())
+                    .englishText(d.getEnglishText())
+                    .vietnameseText(d.getVietnameseText())
+                    .audioUrl(d.getAudioUrl())
+                    .displayOrder(d.getDisplayOrder())
+                    .hasBlank(d.isHasBlank())
+                    .blankWord(d.getBlankWord())
+                    .build();
+            dialogueLineResponses.add(dialogueLineResponse);
+        }
+
+
+        DialogueExerciseResponse dialogueExerciseResponse = DialogueExerciseResponse.builder()
+                .context(dialogueExercise.getContext())
+                .dialogueExerciseLines(dialogueLineResponses)
+                .build();
+
+
+        return ExerciseDetailResponse.<DialogueExerciseResponse>builder()
+                .id(exercise.getId())
+                .instruction(exercise.getInstruction())
+                .displayOrder(exercise.getDisplayOrder())
+                .data(dialogueExerciseResponse)
                 .build();
     }
 }

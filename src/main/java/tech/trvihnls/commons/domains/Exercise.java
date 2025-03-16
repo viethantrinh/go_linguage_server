@@ -37,4 +37,7 @@ public class Exercise extends BaseEntity {
 
     @OneToOne(mappedBy = "exercise")
     private WordArrangementExercise wordArrangementExercise;
+
+    @OneToOne(mappedBy = "exercise")
+    private DialogueExercise dialogueExercise;
 }
