@@ -6,6 +6,7 @@ import com.cloudinary.utils.ObjectUtils;
 import com.cloudinary.utils.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,13 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-//@SpringBootTest
-//@ActiveProfiles({"dev"})
-//@RequiredArgsConstructor
+@Slf4j
+@SpringBootTest
+@ActiveProfiles({"dev"})
+@RequiredArgsConstructor
 public class CloudinaryTest {
 
-//    @Autowired
-//    private Cloudinary cloudinary;
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Test
     void testCloudinaryStringUtils() {
@@ -35,19 +37,31 @@ public class CloudinaryTest {
 
     @Test
     void testUploadAudioWithCustomOption() throws IOException {
-//        Map result = cloudinary.uploader().upload("https://res.cloudinary.com/golinguage/video/upload/v1741530722/audios/b6e03d1f-cad0-4267-87a0-b5d398e3d51a.ogg",
-//                ObjectUtils.asMap(
-//                        "public_id", UUID.randomUUID().toString(),
-//                        "resource_type", "video",
-//                        "asset_folder", "audios",
-//                        "transformation", new Transformation()
-//                                .audioCodec("opus")
-//                                .audioFrequency("48000")
-//                                .fetchFormat("ogg")
-//                                .quality("auto")
-//                )
-//        );
-//        System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
+//        Resource resource = new ClassPathResource("images/topics");
+//        File[] files = null;
+//        try {
+//            File directory = resource.getFile();
+//            files = directory.listFiles();
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Directory not found: " + e.getMessage());
+//        }
+//
+//        for (var f : files) {
+//            Map result = cloudinary.uploader().upload(f,
+//                    ObjectUtils.asMap(
+//                            "public_id", UUID.randomUUID().toString(),
+//                            "resource_type", "video",
+//                            "asset_folder", "audios",
+//                            "transformation", new Transformation()
+//                                    .audioCodec("opus")
+//                                    .audioFrequency("48000")
+//                                    .fetchFormat("ogg")
+//                                    .quality("auto")
+//                    )
+//            );
+//            log.info("FILE NAME: {}", f.getName());
+//            System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(result));
+//        }
     }
 
     @Test

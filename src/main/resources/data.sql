@@ -20,6 +20,7 @@ VALUES
     (1, 2), -- han is user
     (2, 1); -- hang is admin
 
+
 -- SUBSCRIPTION DATA
 INSERT INTO tbl_subscription (name, price, stripe_price_id, duration_in_month, created_at, updated_at)
 VALUES
@@ -47,21 +48,29 @@ VALUES -- 1, 2, 3, 4
     (2, 'Tâm trạng & Cảm xúc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859971/2e06f143-9b2a-4629-821c-e7c0450c2b64.webp', 4, true, now() + interval '6 hour', null)
 ;
 
+-- LESSON_TYPE DATA
+INSERT INTO tbl_lesson_type (name, description, created_at, updated_at)
+VALUES -- 1, 2, 3
+    ('Bài học chung', 'Bài học chung kết hợp các bài tập để học từ vựng', now(), null),
+    ('Bài học nói', 'Bài học nói cho luyện nói các từ vựng và câu thuộc phạm vi của bài học', now(), null),
+    ('Bài học kiểm tra', 'Bài học kiểm tra tổng hợp các bài tập từ các bài học chung', now(), null)
+    ;
+
 -- LESSON DATA
-INSERT INTO tbl_lesson (topic_id, name, display_order, created_at, updated_at)
+INSERT INTO tbl_lesson (topic_id, lesson_type_id, name, display_order, created_at, updated_at)
 VALUES -- 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
-    (1, 'Bài học 1', 1, now(), null),
-    (1, 'Bài học 2', 2, now(), null),
-    (1, 'Bài học 3', 3, now(), null),
-    (1, 'Bài học 4', 4, now(), null),
-    (1, 'Tập nói', 5, now(), null),
-    (1, 'Kiểm tra', 6, now(), null),
-    (2, 'Bài học 1', 1, now(), null),
-    (2, 'Bài học 2', 2, now(), null),
-    (2, 'Bài học 3', 3, now(), null),
-    (2, 'Bài học 4', 4, now(), null),
-    (2, 'Tập nói', 5, now(), null),
-    (2, 'Kiểm tra', 6, now(), null);
+    (1, 1, 'Bài học 1', 1, now(), null),
+    (1, 1, 'Bài học 2', 2, now(), null),
+    (1, 1, 'Bài học 3', 3, now(), null),
+    (1, 1, 'Bài học 4', 4, now(), null),
+    (1, 2, 'Tập nói', 5, now(), null),
+    (1, 3, 'Kiểm tra', 6, now(), null),
+    (2, 1, 'Bài học 1', 1, now(), null),
+    (2, 1, 'Bài học 2', 2, now(), null),
+    (2, 1, 'Bài học 3', 3, now(), null),
+    (2, 1, 'Bài học 4', 4, now(), null),
+    (2, 2, 'Tập nói', 5, now(), null),
+    (2, 3, 'Kiểm tra', 6, now(), null);
 
 -- USER_LESSON_ATTEMPT DATA
 INSERT INTO tbl_user_lesson_attempt (user_id, lesson_id, xp_points_earned, go_points_earned, created_at, updated_at)
@@ -69,3 +78,52 @@ VALUES
     (1, 1, 2, 150, now(), null),
     (1, 2, 3, 200, now() + interval '1 hour', null),
     (1, 8, 1, 100, now() + interval '3 hour', null);
+
+-- ===================================== LEARNING MATERIAL ===================================== --
+-- WORD DATA
+INSERT INTO tbl_word (english_text, vietnamese_text, image_url, audio_url, created_at, updated_at)
+VALUES -- 1, 2, 3, 4
+    ('A woman', 'Phụ nữ', 'https://res.cloudinary.com/golinguage/image/upload/v1742090658/19b05679-b3aa-4e7c-ac29-4fab3c1523ce.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091557/de5fd42c-352b-4af0-bbeb-e70276c7d14b.ogg', now(), null),
+    ('A man', 'Đàn ông', 'https://res.cloudinary.com/golinguage/image/upload/v1742090656/0a00d1e8-c072-4865-8918-e978caecf330.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091555/4bf483b2-3d90-4106-9384-eb861ff261dc.ogg', now(), null),
+    ('A girl', 'Bé gái', 'https://res.cloudinary.com/golinguage/image/upload/v1742090653/089fdddc-e415-43f0-94de-9c807542b405.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091554/98d0d974-f535-47f9-b7b2-fa66800de605.ogg', now(), null),
+    ('A boy', 'Bé trai', 'https://res.cloudinary.com/golinguage/image/upload/v1742090651/f75889b3-c013-4028-9bda-cfa6d8085039.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091552/a57d1771-c571-4f01-acee-d34ee36e11ec.ogg', now(), null);
+
+
+-- SENTENCE DATA
+INSERT INTO tbl_sentence (english_text, vietnamese_text, audio_url, created_at, updated_at)
+VALUES -- 1, 2, 3, 4
+    ('I am a woman', 'Tôi là một người phụ nữ', 'https://res.cloudinary.com/golinguage/video/upload/v1742092142/e4c456f8-9eb1-4a11-a713-94019e20ce96.ogg', now(), null),
+    ('You are a man', 'Bạn là một người đàn ông', 'https://res.cloudinary.com/golinguage/video/upload/v1742092145/d26021a3-766a-41d4-b3a2-cfed44508729.ogg', now(), null),
+    ('She is a girl', 'Em ấy là một bé gái', 'https://res.cloudinary.com/golinguage/video/upload/v1742092144/a0d53536-e648-46e6-89fa-78955f506c75.ogg', now(), null),
+    ('He is a boy', 'Em ấy là một bé trai', 'https://res.cloudinary.com/golinguage/video/upload/v1742092140/66ea5d46-294d-454b-a2e1-26435ec13da7.ogg', now(), null);
+
+
+-- WORD_SENTENCE DATA
+INSERT INTO tbl_word_sentence (word_id, sentence_id)
+VALUES
+       (1, 1),
+       (2, 2),
+       (3, 3),
+       (4, 4);
+
+-- EXERCISE_TYPE DATA
+INSERT INTO tbl_exercise_type (name, description, created_at, updated_at)
+VALUES -- 1, 2, 3, 4, 5, 6
+       ('từ vựng', 'Bài tập về tìm hểu từ vựng mới', now(), null),
+       ('trắc nghiệm', 'Bài tập về chọn đáp án trắc nghiệm đúng', now(), null),
+       ('nối từ', 'Bài tập về nối từ với nghĩa tương ứng', now(), null),
+       ('sắp xếp từ thành câu', 'Bài tập về sắp xếp từ thành câu đúng tương ứng', now(), null),
+       ('phát âm', 'Bài tập về luyện phát âm các từ hoặc câu', now(), null),
+       ('hội thoại', 'Bài tập về đoạn hội thoại như điền vào ô trống, đọc theo', now(), null);
+
+-- EXERCISE DATA
+INSERT INTO tbl_exercise(lesson_id, exercise_type_id, instruction, display_order, created_at, updated_at)
+VALUES -- 1, 2
+    (1, 1, 'Từ mới! ấn để phát lại', 1, now(), null),
+    (1, 1, 'Từ mới! ấn để phát lại', 2, now(), null);
+
+-- VOCABULARY_EXERCISE DATA
+INSERT INTO tbl_vocabulary_exercise(exercise_id, word_id, created_at, updated_at)
+VALUES
+    (1, 1, now(), null),
+    (2, 2, now(), null);
