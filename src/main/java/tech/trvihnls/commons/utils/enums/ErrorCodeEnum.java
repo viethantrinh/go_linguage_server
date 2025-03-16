@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum ErrorCode {
+public enum ErrorCodeEnum {
     UNCATEGORIZED_ERROR(9999, HttpStatus.INTERNAL_SERVER_ERROR, "Uncategorized error"),
     TOKEN_GENERATION_FAILED(5001, HttpStatus.UNAUTHORIZED, "Failed to generate token"),
     UNAUTHENTICATED(5002, HttpStatus.UNAUTHORIZED, "User not authenticated"),
@@ -19,7 +19,8 @@ public enum ErrorCode {
     SUBSCRIPTION_NOT_EXISTED(5009, HttpStatus.NOT_FOUND, "Error caused by subscription plan not existed"),
     PAYMENT_ERROR(5010, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by stripe exception"),
     UPLOAD_RESOURCE_FAILED(5011, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by uploading resource failed"),
-    RELATED_SENTENCES_NOT_EXISTED(5012, HttpStatus.NOT_FOUND, "Error caused by related sentences not existed");
+    RELATED_SENTENCES_NOT_EXISTED(5012, HttpStatus.NOT_FOUND, "Error caused by related sentences not existed"),
+    RESOURCE_CONFLICT(5013, HttpStatus.CONFLICT,"Error caused by some resources conflicted");
 
     private final int code;
     private final HttpStatus status;

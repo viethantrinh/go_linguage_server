@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.dtos.ApiResponse.ErrorResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                 .apiPath(request.getServletPath())
                 .errors(List.of(accessDeniedException.getMessage()))
                 .build();
-        ResponseEntity<ApiResponse<Void>> result = ResponseUtils.error(ErrorCode.UNAUTHORIZED, errorResponse);
+        ResponseEntity<ApiResponse<Void>> result = ResponseUtils.error(ErrorCodeEnum.UNAUTHORIZED, errorResponse);
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String errorJson = mapper.writeValueAsString(result.getBody());

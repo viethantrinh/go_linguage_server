@@ -28,4 +28,7 @@ public class Exercise extends BaseEntity {
 
     @OneToOne(mappedBy = "exercise")
     private VocabularyExercise vocabularyExercise;
+
+    @OneToOne(mappedBy = "exercise")
+    private MultipleChoiceExercise multipleChoiceExercise;
 }

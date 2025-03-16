@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum SuccessCode {
+public enum SuccessCodeEnum {
     GENERAL_SUCCESS(1000, HttpStatus.OK, "success"),
     SIGN_IN_SUCCEEDED(1000, HttpStatus.OK, "sign in succeeded"),
     SIGN_UP_SUCCEEDED(1000, HttpStatus.OK, "sign up succeeded"),

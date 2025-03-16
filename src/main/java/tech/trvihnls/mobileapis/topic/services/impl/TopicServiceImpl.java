@@ -7,13 +7,17 @@ import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.*;
 import tech.trvihnls.commons.utils.SecurityUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.excercise.dtos.response.ExerciseDetailResponse;
+import tech.trvihnls.mobileapis.excercise.dtos.response.MultipleChoiceExerciseResponse;
 import tech.trvihnls.mobileapis.excercise.dtos.response.VocabularyExerciseResponse;
 import tech.trvihnls.mobileapis.lesson.dtos.response.LessonDetailResponse;
 import tech.trvihnls.mobileapis.topic.services.TopicService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +29,15 @@ public class TopicServiceImpl implements TopicService {
     private final ExerciseRepository exerciseRepository;
     private final VocabularyExerciseRepository vocabularyExerciseRepository;
     private final WordRepository wordRepository;
+    private final MultipleChoiceExerciseRepository multipleChoiceExerciseRepository;
+    private final MultipleChoiceOptionRepository multipleChoiceOptionRepository;
 
+    /**
+     * Return all lessons and exercises inside that lesson for details
+     *
+     * @param topicId id's of the topic
+     * @return all lessons and exercises inside that lesson for details (lessons owned by topic)
+     */
     @Override
     public List<LessonDetailResponse> getTopicLessonDetailResponseData(long topicId) {
         // Find all related lessons belong to these topic (find list of lessons which have this topicId)
@@ -56,6 +68,10 @@ public class TopicServiceImpl implements TopicService {
                     exerciseDetails.add(buildVocabularyExerciseResponse(e));
                 }
 
+                if (e.getMultipleChoiceExercise() != null) {
+                    exerciseDetails.add(buildMultipleChoiceExerciseResponse(e));
+                }
+
 //                if (e.get....Exercise() != null) {  // for another exercise type
 //
 //                }
@@ -76,6 +92,7 @@ public class TopicServiceImpl implements TopicService {
         return lessonDetails;
     }
 
+
     private ExerciseDetailResponse<VocabularyExerciseResponse> buildVocabularyExerciseResponse(Exercise exercise) {
 
         // Find the word related to this vocabulary exercise
@@ -85,7 +102,7 @@ public class TopicServiceImpl implements TopicService {
         List<Sentence> relatedSentence = word.getSentences();
 
         if (relatedSentence.isEmpty()) {
-            throw new ResourceNotFoundException(ErrorCode.RELATED_SENTENCES_NOT_EXISTED);
+            throw new ResourceNotFoundException(ErrorCodeEnum.RELATED_SENTENCES_NOT_EXISTED);
         }
 
         VocabularyExerciseResponse vocabularyExerciseResponse = VocabularyExerciseResponse.builder()
@@ -107,6 +124,86 @@ public class TopicServiceImpl implements TopicService {
                 .instruction(exercise.getInstruction())
                 .displayOrder(exercise.getDisplayOrder())
                 .data(vocabularyExerciseResponse)
+                .build();
+    }
+
+    private ExerciseDetailResponse<MultipleChoiceExerciseResponse> buildMultipleChoiceExerciseResponse(Exercise exercise) {
+
+        MultipleChoiceExercise multipleChoiceExercise = exercise.getMultipleChoiceExercise();
+
+        var questionBuilder = MultipleChoiceExerciseResponse.Question.builder();
+
+        if (multipleChoiceExercise.getWord() != null && multipleChoiceExercise.getSentence() != null) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        if (multipleChoiceExercise.getWord() != null) {
+            Word word = multipleChoiceExercise.getWord();
+            questionBuilder
+                    .englishText(word.getEnglishText())
+                    .vietnameseText(word.getVietnameseText())
+                    .imageUrl(word.getImageUrl())
+                    .audioUrl(word.getAudioUrl());
+        }
+
+        if (multipleChoiceExercise.getSentence() != null) {
+            Sentence sentence = multipleChoiceExercise.getSentence();
+            questionBuilder
+                    .englishText(sentence.getEnglishText())
+                    .vietnameseText(sentence.getVietnameseText())
+                    .audioUrl(sentence.getAudioUrl());
+        }
+
+        List<MultipleChoiceExerciseResponse.Option> options = new ArrayList<>();
+        List<MultipleChoiceOption> multipleChoiceOptions =
+                exercise.getMultipleChoiceExercise().getMultipleChoiceOptions();
+
+        for (var o : multipleChoiceOptions) {
+
+            if (o.getWord() != null && o.getSentence() != null) {
+                throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+            }
+
+            var optionBuilder = MultipleChoiceExerciseResponse.Option.builder();
+
+            if (o.getWord() != null) {
+                Word word = o.getWord();
+                optionBuilder
+                        .optionType(o.getOptionType())
+                        .isCorrect(o.isCorrect())
+                        .englishText(word.getEnglishText())
+                        .vietnameseText(word.getVietnameseText())
+                        .imageUrl(word.getImageUrl())
+                        .audioUrl(word.getAudioUrl());
+            }
+
+            if (o.getSentence() != null) {
+                Sentence sentence = o.getSentence();
+                optionBuilder
+                        .optionType(o.getOptionType())
+                        .isCorrect(o.isCorrect())
+                        .englishText(sentence.getEnglishText())
+                        .vietnameseText(sentence.getVietnameseText())
+                        .audioUrl(sentence.getAudioUrl());
+            }
+
+            options.add(optionBuilder.build());
+        }
+
+
+        MultipleChoiceExerciseResponse multipleChoiceExerciseResponse = MultipleChoiceExerciseResponse.builder()
+                .sourceLanguage(multipleChoiceExercise.getSourceLanguage())
+                .targetLanguage(multipleChoiceExercise.getTargetLanguage())
+                .questionType(multipleChoiceExercise.getQuestionType())
+                .question(questionBuilder.build())
+                .options(options)
+                .build();
+
+        return ExerciseDetailResponse.<MultipleChoiceExerciseResponse>builder()
+                .id(exercise.getId())
+                .instruction(exercise.getInstruction())
+                .displayOrder(exercise.getDisplayOrder())
+                .data(multipleChoiceExerciseResponse)
                 .build();
     }
 }

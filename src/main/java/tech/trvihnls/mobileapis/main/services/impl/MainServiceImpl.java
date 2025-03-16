@@ -7,15 +7,18 @@ import org.springframework.stereotype.Service;
 import tech.trvihnls.commons.domains.*;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.*;
+import tech.trvihnls.commons.utils.SecurityUtils;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.commons.utils.enums.PaymentStatusEnum;
 import tech.trvihnls.mobileapis.level.dtos.response.LevelResponse;
 import tech.trvihnls.mobileapis.main.dtos.response.HomeResponse;
-import tech.trvihnls.mobileapis.topic.dtos.response.TopicResponse;
 import tech.trvihnls.mobileapis.main.services.MainService;
-import tech.trvihnls.commons.utils.SecurityUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
-import tech.trvihnls.commons.utils.enums.PaymentStatus;
+import tech.trvihnls.mobileapis.topic.dtos.response.TopicResponse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -33,13 +36,13 @@ public class MainServiceImpl implements MainService {
     public HomeResponse retrieveHomeData() {
         Long userId = SecurityUtils.getCurrentUserId();
         if (userId == null) {
-            throw new ResourceNotFoundException(ErrorCode.USER_NOT_EXISTED);
+            throw new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
 
-        boolean isUserSubscribed = userSubscriptionRepository.existsByIsActiveAndPaymentStatus(true, PaymentStatus.SUCCEEDED.getValue());
+        boolean isUserSubscribed = userSubscriptionRepository.existsByIsActiveAndPaymentStatus(true, PaymentStatusEnum.SUCCEEDED.getValue());
 
         // find all the lesson ids which belong to this user in user attempt table (mean what lessons that user have learned)
         List<UserLessonAttempt> lessonsByUser = userLessonAttemptRepository.findByUserId(user.getId());

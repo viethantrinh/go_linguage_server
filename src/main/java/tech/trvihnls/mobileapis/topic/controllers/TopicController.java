@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
-import tech.trvihnls.commons.utils.enums.SuccessCode;
+import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.mobileapis.lesson.dtos.response.LessonDetailResponse;
-import tech.trvihnls.mobileapis.topic.dtos.response.TopicDetailResponse;
 import tech.trvihnls.mobileapis.topic.services.TopicService;
 
 import java.util.List;
@@ -25,6 +24,6 @@ public class TopicController {
     @GetMapping("/{id}/lessons/detail")
     public ResponseEntity<ApiResponse<List<LessonDetailResponse>>> getTopicDetailLessonLearningMaterial(@PathVariable("id") long id) {
         List<LessonDetailResponse> response = topicService.getTopicLessonDetailResponseData(id);
-        return ResponseUtils.success(SuccessCode.GENERAL_SUCCESS, response);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

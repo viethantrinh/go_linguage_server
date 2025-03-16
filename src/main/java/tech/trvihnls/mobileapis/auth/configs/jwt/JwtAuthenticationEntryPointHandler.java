@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.dtos.ApiResponse.ErrorResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +33,7 @@ public class JwtAuthenticationEntryPointHandler implements AuthenticationEntryPo
                 .apiPath(request.getServletPath())
                 .errors(List.of(authException.getMessage()))
                 .build();
-        ResponseEntity<ApiResponse<Void>> result = ResponseUtils.error(ErrorCode.UNAUTHENTICATED, errorResponse);
+        ResponseEntity<ApiResponse<Void>> result = ResponseUtils.error(ErrorCodeEnum.UNAUTHENTICATED, errorResponse);
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         String errorJson = mapper.writeValueAsString(result.getBody());

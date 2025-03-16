@@ -38,15 +38,31 @@ VALUES
 -- TOPIC DATA
 INSERT INTO tbl_topic (level_id, name, description, image_url, display_order, is_premium, created_at, updated_at)
 VALUES -- 1, 2, 3, 4
-    (1, 'Giới thiệu', 'chủ đề giới thiệu', 'http://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 1, false, now(), null),
-    (1, 'Câu cơ bản', 'các loại câu cơ bản', 'http://res.cloudinary.com/golinguage/image/upload/v1741582254/8053962f-f5f2-4b8a-9084-6bba51b349e4.webp', 2, false, now(), null),
-    (1, 'Số đếm & Gia đình', 'số đếm cơ bản và từ vựng về gia đình', 'http://res.cloudinary.com/golinguage/image/upload/v1741582247/bb930d26-15d2-443d-aa69-f0ba2f5a8dde.webp', 3, true, now(), null),
-    (1, 'Số đếm & Tập đếm', 'số đếm nâng cao', 'http://res.cloudinary.com/golinguage/image/upload/v1741582252/c4e87654-8186-4caf-8add-3cc63d3be9f7.webp', 4, true, now(), null),
-    (2, 'Địa điểm & Vị trí', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859407/3ce77ae1-5af1-4988-9f4d-69134caa483b.webp', 1, true, now() + interval '1 hour', null),
-    (2, 'Dẫn đường', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859404/33488dc7-0db3-47a4-9757-99b3da461766.webp', 2, true, now() + interval '2 hour', null),
-    (2, 'Công việc & Nơi làm việc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859402/b1123965-60ce-4f1f-ae59-da768868ad6a.webp', 3, true, now() + interval '10 hour', null),
-    (2, 'Tâm trạng & Cảm xúc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859971/2e06f143-9b2a-4629-821c-e7c0450c2b64.webp', 4, true, now() + interval '6 hour', null)
-;
+    (1, 'Giới thiệu', 'chủ đề giới thiệu', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp',
+     1, false, now(), null),
+
+    (1, 'Câu cơ bản', 'các loại câu cơ bản', 'https://res.cloudinary.com/golinguage/image/upload/v1741582254/8053962f-f5f2-4b8a-9084-6bba51b349e4.webp',
+     2, false, now(), null),
+
+    (1, 'Số đếm & Gia đình', 'số đếm cơ bản và từ vựng về gia đình', 'https://res.cloudinary.com/golinguage/image/upload/v1741582247/bb930d26-15d2-443d-aa69-f0ba2f5a8dde.webp',
+     3, true, now(), null),
+
+    (1, 'Số đếm & Tập đếm', 'số đếm nâng cao', 'https://res.cloudinary.com/golinguage/image/upload/v1741582252/c4e87654-8186-4caf-8add-3cc63d3be9f7.webp',
+     4, true, now(), null),
+
+    (2, 'Địa điểm & Vị trí', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859407/3ce77ae1-5af1-4988-9f4d-69134caa483b.webp',
+     1, true, now() + interval '1 hour', null),
+
+    (2, 'Dẫn đường', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859404/33488dc7-0db3-47a4-9757-99b3da461766.webp',
+     2, true, now() + interval '2 hour', null),
+
+    (2, 'Công việc & Nơi làm việc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859402/b1123965-60ce-4f1f-ae59-da768868ad6a.webp',
+     3, true, now() + interval '10 hour', null),
+
+    (2, 'Tâm trạng & Cảm xúc', 'no des', 'https://res.cloudinary.com/golinguage/image/upload/v1741859971/2e06f143-9b2a-4629-821c-e7c0450c2b64.webp',
+     4, true, now() + interval '6 hour', null)
+    ;
+
 
 -- LESSON_TYPE DATA
 INSERT INTO tbl_lesson_type (name, description, created_at, updated_at)
@@ -77,24 +93,37 @@ INSERT INTO tbl_user_lesson_attempt (user_id, lesson_id, xp_points_earned, go_po
 VALUES
     (1, 1, 2, 150, now(), null),
     (1, 2, 3, 200, now() + interval '1 hour', null),
-    (1, 8, 1, 100, now() + interval '3 hour', null);
+    (1, 8, 1, 100, now() + interval '3 hour', null)
+    ;
 
 -- ===================================== LEARNING MATERIAL ===================================== --
 -- WORD DATA
 INSERT INTO tbl_word (english_text, vietnamese_text, image_url, audio_url, created_at, updated_at)
 VALUES -- 1, 2, 3, 4
-    ('A woman', 'Phụ nữ', 'https://res.cloudinary.com/golinguage/image/upload/v1742090658/19b05679-b3aa-4e7c-ac29-4fab3c1523ce.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091557/de5fd42c-352b-4af0-bbeb-e70276c7d14b.ogg', now(), null),
-    ('A man', 'Đàn ông', 'https://res.cloudinary.com/golinguage/image/upload/v1742090656/0a00d1e8-c072-4865-8918-e978caecf330.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091555/4bf483b2-3d90-4106-9384-eb861ff261dc.ogg', now(), null),
-    ('A girl', 'Bé gái', 'https://res.cloudinary.com/golinguage/image/upload/v1742090653/089fdddc-e415-43f0-94de-9c807542b405.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091554/98d0d974-f535-47f9-b7b2-fa66800de605.ogg', now(), null),
-    ('A boy', 'Bé trai', 'https://res.cloudinary.com/golinguage/image/upload/v1742090651/f75889b3-c013-4028-9bda-cfa6d8085039.webp', 'https://res.cloudinary.com/golinguage/video/upload/v1742091552/a57d1771-c571-4f01-acee-d34ee36e11ec.ogg', now(), null);
+    ('A woman', 'Phụ nữ', 'https://res.cloudinary.com/golinguage/image/upload/v1742090658/19b05679-b3aa-4e7c-ac29-4fab3c1523ce.webp',
+     'https://res.cloudinary.com/golinguage/video/upload/v1742091557/de5fd42c-352b-4af0-bbeb-e70276c7d14b.ogg', now(), null),
+
+    ('A man', 'Đàn ông', 'https://res.cloudinary.com/golinguage/image/upload/v1742090656/0a00d1e8-c072-4865-8918-e978caecf330.webp',
+     'https://res.cloudinary.com/golinguage/video/upload/v1742091555/4bf483b2-3d90-4106-9384-eb861ff261dc.ogg', now(), null),
+
+    ('A girl', 'Bé gái', 'https://res.cloudinary.com/golinguage/image/upload/v1742090653/089fdddc-e415-43f0-94de-9c807542b405.webp',
+     'https://res.cloudinary.com/golinguage/video/upload/v1742091554/98d0d974-f535-47f9-b7b2-fa66800de605.ogg', now(), null),
+
+    ('A boy', 'Bé trai', 'https://res.cloudinary.com/golinguage/image/upload/v1742090651/f75889b3-c013-4028-9bda-cfa6d8085039.webp',
+     'https://res.cloudinary.com/golinguage/video/upload/v1742091552/a57d1771-c571-4f01-acee-d34ee36e11ec.ogg', now(), null)
+    ;
 
 
 -- SENTENCE DATA
 INSERT INTO tbl_sentence (english_text, vietnamese_text, audio_url, created_at, updated_at)
-VALUES -- 1, 2, 3, 4
+VALUES
+    -- 1
     ('I am a woman', 'Tôi là một người phụ nữ', 'https://res.cloudinary.com/golinguage/video/upload/v1742092142/e4c456f8-9eb1-4a11-a713-94019e20ce96.ogg', now(), null),
+    -- 2
     ('You are a man', 'Bạn là một người đàn ông', 'https://res.cloudinary.com/golinguage/video/upload/v1742092145/d26021a3-766a-41d4-b3a2-cfed44508729.ogg', now(), null),
+    -- 3
     ('She is a girl', 'Em ấy là một bé gái', 'https://res.cloudinary.com/golinguage/video/upload/v1742092144/a0d53536-e648-46e6-89fa-78955f506c75.ogg', now(), null),
+    -- 4
     ('He is a boy', 'Em ấy là một bé trai', 'https://res.cloudinary.com/golinguage/video/upload/v1742092140/66ea5d46-294d-454b-a2e1-26435ec13da7.ogg', now(), null);
 
 
@@ -104,7 +133,8 @@ VALUES
        (1, 1),
        (2, 2),
        (3, 3),
-       (4, 4);
+       (4, 4)
+        ;
 
 -- EXERCISE_TYPE DATA
 INSERT INTO tbl_exercise_type (name, description, created_at, updated_at)
@@ -114,16 +144,54 @@ VALUES -- 1, 2, 3, 4, 5, 6
        ('nối từ', 'Bài tập về nối từ với nghĩa tương ứng', now(), null),
        ('sắp xếp từ thành câu', 'Bài tập về sắp xếp từ thành câu đúng tương ứng', now(), null),
        ('phát âm', 'Bài tập về luyện phát âm các từ hoặc câu', now(), null),
-       ('hội thoại', 'Bài tập về đoạn hội thoại như điền vào ô trống, đọc theo', now(), null);
+       ('hội thoại', 'Bài tập về đoạn hội thoại như điền vào ô trống, đọc theo', now(), null)
+        ;
 
 -- EXERCISE DATA
 INSERT INTO tbl_exercise(lesson_id, exercise_type_id, instruction, display_order, created_at, updated_at)
-VALUES -- 1, 2
+VALUES
+    -- 1
     (1, 1, 'Từ mới! ấn để phát lại', 1, now(), null),
-    (1, 1, 'Từ mới! ấn để phát lại', 2, now(), null);
+    -- 2
+    (1, 1, 'Từ mới! ấn để phát lại', 2, now(), null),
+    -- 3
+    (1, 2, 'Lựa chọn câu trả lời đúng', 3, now(), null),
+    -- 4
+    (1, 1, 'Từ mới! ấn để phát lại', 4, now(), null),
+    -- 5
+    (1, 2, 'Lựa chọn câu trả lời đúng', 5, now(), null)
+    ;
 
 -- VOCABULARY_EXERCISE DATA
 INSERT INTO tbl_vocabulary_exercise(exercise_id, word_id, created_at, updated_at)
 VALUES
     (1, 1, now(), null),
-    (2, 2, now(), null);
+    (2, 2, now(), null),
+    (4, 3, now(), null)
+    ;
+
+-- MULTIPLE_CHOICE_EXERCISE DATA
+INSERT INTO tbl_multiple_choice_exercise
+    (exercise_id, word_id, sentence_id, question_type, source_language, target_language, created_at, updated_at)
+VALUES
+    -- 1
+    (3, 1, null, 'word', 'vietnamese', 'english', now(), null),
+    -- 2
+    (5, 2, null, 'word', 'vietnamese', 'english', now(), null)
+    ;
+
+-- MULTIPLE_CHOICE_OPTION DATA
+INSERT INTO tbl_multiple_choice_option
+    (multiple_choice_exercise_id, word_id, sentence_id, option_type, is_correct, created_at, updated_at)
+VALUES
+    -- 1
+    (1, 1, null, 'word', true, now(), null),
+    (1, 2, null, 'word', false, now(), null),
+    (1, 3, null, 'word', false, now(), null),
+    (1, 4, null, 'word', false, now(), null),
+    -- 2
+    (2, 4, null, 'word', false, now(), null),
+    (2, 1, null, 'word', false, now(), null),
+    (2, 2, null, 'word', true, now(), null),
+    (2, 3, null, 'word', false, now(), null)
+    ;

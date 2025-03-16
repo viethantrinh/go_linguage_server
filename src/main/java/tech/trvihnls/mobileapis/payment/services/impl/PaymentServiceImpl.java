@@ -7,21 +7,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tech.trvihnls.commons.exceptions.AppException;
-import tech.trvihnls.mobileapis.payment.dtos.request.PaymentIntentRequest;
-import tech.trvihnls.mobileapis.payment.dtos.response.PaymentIntentResponse;
-import tech.trvihnls.mobileapis.payment.dtos.request.StripeSubscriptionRequest;
-import tech.trvihnls.mobileapis.payment.dtos.response.StripeSubscriptionResponse;
 import tech.trvihnls.commons.domains.Subscription;
 import tech.trvihnls.commons.domains.User;
 import tech.trvihnls.commons.domains.UserSubscription;
-import tech.trvihnls.mobileapis.payment.services.PaymentService;
-import tech.trvihnls.mobileapis.main.services.SubscriptionService;
-import tech.trvihnls.mobileapis.user.services.UserService;
-import tech.trvihnls.mobileapis.main.services.UserSubscriptionService;
+import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.utils.SecurityUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
-import tech.trvihnls.commons.utils.enums.PaymentStatus;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.commons.utils.enums.PaymentStatusEnum;
+import tech.trvihnls.mobileapis.main.services.SubscriptionService;
+import tech.trvihnls.mobileapis.main.services.UserSubscriptionService;
+import tech.trvihnls.mobileapis.payment.dtos.request.PaymentIntentRequest;
+import tech.trvihnls.mobileapis.payment.dtos.request.StripeSubscriptionRequest;
+import tech.trvihnls.mobileapis.payment.dtos.response.PaymentIntentResponse;
+import tech.trvihnls.mobileapis.payment.dtos.response.StripeSubscriptionResponse;
+import tech.trvihnls.mobileapis.payment.services.PaymentService;
+import tech.trvihnls.mobileapis.user.services.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             paymentIntent = PaymentIntent.create(params);
         } catch (StripeException e) {
-            throw new AppException(ErrorCode.PAYMENT_ERROR);
+            throw new AppException(ErrorCodeEnum.PAYMENT_ERROR);
         }
 
         // if create payment intent succeeded
@@ -78,7 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
             userSubscription.setEndDate(LocalDateTime.now().plusMonths(subscription.getDurationInMonth()));
         }
 
-        userSubscription.setPaymentStatus(PaymentStatus.SUCCEEDED.getValue());
+        userSubscription.setPaymentStatus(PaymentStatusEnum.SUCCEEDED.getValue());
         userSubscription.setActive(true);
         userSubscription.setStripePaymentIntentId(request.getPaymentMethodId());
 

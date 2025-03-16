@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.dtos.ApiResponse.ErrorResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleGenericException(HttpServletRequest request, Exception ex) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .apiPath(request.getServletPath())
-                .errors(List.of(ErrorCode.UNCATEGORIZED_ERROR.getMessage()))
+                .errors(List.of(ErrorCodeEnum.UNCATEGORIZED_ERROR.getMessage()))
                 .build();
         log.error(ex.getMessage(), ex);
-        return ResponseUtils.error(ErrorCode.UNCATEGORIZED_ERROR, errorResponse);
+        return ResponseUtils.error(ErrorCodeEnum.UNCATEGORIZED_ERROR, errorResponse);
     }
 
     @ExceptionHandler(exception = AppException.class)
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
                 .errors(List.of(ex.getMessage()))
                 .build();
         log.error(ex.getMessage(), ex);
-        return ResponseUtils.error(ex.getErrorCode(), errorResponse);
+        return ResponseUtils.error(ex.getErrorCodeEnum(), errorResponse);
     }
 
     @ExceptionHandler(exception = ResourceNotFoundException.class)
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
                 .errors(List.of(ex.getMessage()))
                 .build();
         log.error(ex.getMessage(), ex);
-        return ResponseUtils.error(ex.getErrorCode(), errorResponse);
+        return ResponseUtils.error(ex.getErrorCodeEnum(), errorResponse);
     }
 
     @ExceptionHandler(exception = AuthorizationDeniedException.class)
@@ -61,6 +61,6 @@ public class GlobalExceptionHandler {
                 .errors(List.of(ex.getMessage()))
                 .build();
         log.error(ex.getMessage(), ex);
-        return ResponseUtils.error(ErrorCode.UNAUTHORIZED, errorResponse);
+        return ResponseUtils.error(ErrorCodeEnum.UNAUTHORIZED, errorResponse);
     }
 }

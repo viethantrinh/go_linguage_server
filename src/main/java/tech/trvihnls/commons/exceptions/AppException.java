@@ -1,14 +1,14 @@
 package tech.trvihnls.commons.exceptions;
 
 import lombok.Getter;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 
 @Getter
 public class AppException extends RuntimeException {
-    private final ErrorCode errorCode;
+    private final ErrorCodeEnum errorCodeEnum;
 
-    public AppException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public AppException(ErrorCodeEnum errorCodeEnum) {
+        super(errorCodeEnum.getMessage());
+        this.errorCodeEnum = errorCodeEnum;
     }
 }

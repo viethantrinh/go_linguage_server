@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum PaymentStatus {
+public enum PaymentStatusEnum {
     SUCCEEDED("succeeded"),
     PROCESS("process"),
     FAILED("failed");

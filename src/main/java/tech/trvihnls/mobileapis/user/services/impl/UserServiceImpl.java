@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
-import tech.trvihnls.mobileapis.user.services.UserService;
-import tech.trvihnls.mobileapis.user.dtos.response.UserInfoResponse;
-import tech.trvihnls.mobileapis.user.dtos.request.UserUpdateRequest;
 import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.UserRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.mobileapis.user.dtos.request.UserUpdateRequest;
+import tech.trvihnls.mobileapis.user.dtos.response.UserInfoResponse;
+import tech.trvihnls.mobileapis.user.services.UserService;
 
 import java.util.Optional;
 
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_EXISTED));
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_EXISTED));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         Long id = SecurityUtils.getCurrentUserId();
         assert id != null;
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
         return UserInfoResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("@userSecurity.isCurrentUser(#request.id)")
     public UserInfoResponse updateUserInfo(UserUpdateRequest request) {
         User user = userRepository.findById(request.getId())
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
         user.setName(request.getName());
         User updatedUser = userRepository.save(user);
         return UserInfoResponse.builder()
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("@userSecurity.isCurrentUser(#id)")
     public void deleteUserInfo(long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
         userRepository.delete(user);
     }
 }

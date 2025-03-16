@@ -8,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.exceptions.AppException;
+import tech.trvihnls.commons.utils.AppConstants;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.media.dtos.response.CloudinaryUrlResponse;
 import tech.trvihnls.mobileapis.media.services.MediaUploadService;
-import tech.trvihnls.commons.utils.AppConstants;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class CloudinaryMediaUploadServiceImpl implements MediaUploadService {
         try {
             result = cloudinary.uploader().upload(multipartFile, cloudinaryUploadOptions);
         } catch (IOException e) {
-            throw new AppException(ErrorCode.UPLOAD_RESOURCE_FAILED);
+            throw new AppException(ErrorCodeEnum.UPLOAD_RESOURCE_FAILED);
         }
 
 
@@ -71,7 +71,7 @@ public class CloudinaryMediaUploadServiceImpl implements MediaUploadService {
         try {
             result = cloudinary.uploader().upload(multipartFile, cloudinaryUploadOptions);
         } catch (IOException e) {
-            throw new AppException(ErrorCode.UPLOAD_RESOURCE_FAILED);
+            throw new AppException(ErrorCodeEnum.UPLOAD_RESOURCE_FAILED);
         }
         return CloudinaryUrlResponse.builder()
                 .secureUrl((String) result.get("secure_url"))

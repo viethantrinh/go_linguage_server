@@ -10,14 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.domains.InvalidatedToken;
 import tech.trvihnls.commons.domains.Role;
 import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.exceptions.AppException;
+import tech.trvihnls.commons.utils.AppConstants;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.auth.services.InvalidatedTokenService;
 import tech.trvihnls.mobileapis.auth.services.JwtService;
-import tech.trvihnls.commons.utils.AppConstants;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -80,7 +80,7 @@ public class JwtServiceImpl implements JwtService {
             return signedJWT.serialize();
         } catch (JOSEException e) {
             log.error("Failed to generate JWT token", e);
-            throw new AppException(ErrorCode.TOKEN_GENERATION_FAILED);
+            throw new AppException(ErrorCodeEnum.TOKEN_GENERATION_FAILED);
         }
     }
 

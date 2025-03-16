@@ -9,6 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import tech.trvihnls.commons.domains.InvalidatedToken;
+import tech.trvihnls.commons.domains.Role;
+import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.exceptions.AppException;
+import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
+import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.commons.utils.enums.RoleEnum;
 import tech.trvihnls.mobileapis.auth.dtos.request.GoogleAuthRequest;
 import tech.trvihnls.mobileapis.auth.dtos.request.SignInRequest;
 import tech.trvihnls.mobileapis.auth.dtos.request.SignOutRequest;
@@ -20,13 +27,6 @@ import tech.trvihnls.mobileapis.auth.services.AuthService;
 import tech.trvihnls.mobileapis.auth.services.InvalidatedTokenService;
 import tech.trvihnls.mobileapis.auth.services.JwtService;
 import tech.trvihnls.mobileapis.auth.services.RoleService;
-import tech.trvihnls.commons.exceptions.AppException;
-import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
-import tech.trvihnls.commons.domains.InvalidatedToken;
-import tech.trvihnls.commons.domains.Role;
-import tech.trvihnls.commons.domains.User;
-import tech.trvihnls.commons.utils.enums.ErrorCode;
-import tech.trvihnls.commons.utils.enums.RoleEnum;
 import tech.trvihnls.mobileapis.user.services.UserService;
 
 import java.io.IOException;
@@ -52,13 +52,13 @@ public class AuthServiceImpl implements AuthService {
         String email = request.getEmail();
         String rawPassword = request.getPassword();
 
-        User user = userService.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+        User user = userService.findByEmail(email).orElseThrow(() -> new AppException(ErrorCodeEnum.UNAUTHENTICATED));
 
         if (!passwordEncoder.matches(rawPassword, user.getPassword()))
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(ErrorCodeEnum.UNAUTHENTICATED);
 
         if (!user.isEnabled())
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(ErrorCodeEnum.UNAUTHENTICATED);
 
         String token = jwtService.generateToken(user);
 
@@ -74,10 +74,10 @@ public class AuthServiceImpl implements AuthService {
         String password = request.getPassword();
 
         if (userService.isUserWithEmailExisted(email))
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCodeEnum.USER_EXISTED);
 
         Role role = roleService.findByName(RoleEnum.ROLE_USER.getName())
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.ROLE_NOT_EXISTED));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.ROLE_NOT_EXISTED));
 
         User user = User.builder()
                 .name(name)
@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
             GoogleIdToken idToken = googleIdTokenVerifier.verify(request.getIdToken());
 
             if (idToken == null) {
-                throw new AppException(ErrorCode.UNAUTHENTICATED);
+                throw new AppException(ErrorCodeEnum.UNAUTHENTICATED);
             }
 
             // Extract user info from token
@@ -149,15 +149,15 @@ public class AuthServiceImpl implements AuthService {
             if (userService.isUserWithEmailExisted(email)) {
                 // User exists, retrieve their details
                 user = userService.findByEmail(email)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                        .orElseThrow(() -> new AppException(ErrorCodeEnum.USER_NOT_EXISTED));
                 
                 if (!user.isEnabled()) {
-                    throw new AppException(ErrorCode.UNAUTHENTICATED);
+                    throw new AppException(ErrorCodeEnum.UNAUTHENTICATED);
                 }
             } else {
                 // User doesn't exist, create new account
                 Role role = roleService.findByName(RoleEnum.ROLE_USER.getName())
-                        .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.ROLE_NOT_EXISTED));
+                        .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.ROLE_NOT_EXISTED));
 
                 // Generate a random secure password for Google users
                 String randomPassword = generateSecurePassword();
@@ -182,7 +182,7 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         } catch (GeneralSecurityException | IOException e) {
             log.error("Error verifying Google token", e);
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(ErrorCodeEnum.UNAUTHENTICATED);
         }
     }
 
