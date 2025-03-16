@@ -42,12 +42,13 @@ public class MainServiceImpl implements MainService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
 
-        boolean isUserSubscribed = userSubscriptionRepository.existsByIsActiveAndPaymentStatus(true, PaymentStatusEnum.SUCCEEDED.getValue());
+        boolean isUserSubscribed = userSubscriptionRepository
+                .existsByIsActiveAndPaymentStatusAndUserId(true, PaymentStatusEnum.SUCCEEDED.getValue(), user.getId());
+
+        log.info("isUserSubscribed: {}", isUserSubscribed);
 
         // find all the lesson ids which belong to this user in user attempt table (mean what lessons that user have learned)
         List<UserLessonAttempt> lessonsByUser = userLessonAttemptRepository.findByUserId(user.getId());
-
-        log.debug("Lesson IDs of user's ID {}: {}", user.getId(), lessonsByUser);
 
         // create a map which the keys are user's lesson attempted IDs, value is the current xp points of that lesson
         Map<Long, Integer> lessonXPMap = new HashMap<>();
@@ -81,7 +82,7 @@ public class MainServiceImpl implements MainService {
                         .name(topic.getName())
                         .imageUrl(topic.getImageUrl())
                         .displayOrder(topic.getDisplayOrder())
-                        .isPremium(level.getId() != 1 && level.getId() != 2 && !isUserSubscribed) // if user is premium => unlock all topic by setting this to false
+                        .isPremium(topic.getId() != 1 && topic.getId() != 2 && !isUserSubscribed) // if user is premium => unlock all topic by setting this to false
                         .totalUserXPPoints(topicTotalXp)
                         .build();
 
