@@ -1,5 +1,6 @@
 package tech.trvihnls.mobileapis.excercise.dtos.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
@@ -30,6 +31,7 @@ public class MultipleChoiceExerciseResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonPropertyOrder({"englishText", "vietnameseText", "imageUrl", "audioUrl"})
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Question {
         private String englishText;
         private String vietnameseText;
@@ -43,6 +45,7 @@ public class MultipleChoiceExerciseResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonPropertyOrder({"optionType", "isCorrect", "englishText", "vietnameseText", "imageUrl", "audioUrl"})
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Option {
         private MultipleChoiceExerciseEnum optionType;
         @JsonProperty("isCorrect")

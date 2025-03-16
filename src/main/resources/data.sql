@@ -159,7 +159,17 @@ VALUES
     -- 4
     (1, 1, 'Từ mới! ấn để phát lại', 4, now(), null),
     -- 5
-    (1, 2, 'Lựa chọn câu trả lời đúng', 5, now(), null)
+    (1, 2, 'Lựa chọn câu trả lời đúng', 5, now(), null),
+    -- 6
+    (1, 3, 'Nối những thẻ này', 6, now(), null),
+    -- 7
+    (1, 1, 'Từ mới! ấn để phát lại', 7, now(), null),
+    -- 8
+    (1, 2, 'Lựa chọn câu trả lời đúng', 8, now(), null),
+    -- 9
+    (1, 3, 'Nối những thẻ này', 9, now(), null),
+    -- 10
+    (1, 2, 'Lựa chọn câu trả lời đúng', 10, now(), null)
     ;
 
 -- VOCABULARY_EXERCISE DATA
@@ -167,7 +177,8 @@ INSERT INTO tbl_vocabulary_exercise(exercise_id, word_id, created_at, updated_at
 VALUES
     (1, 1, now(), null),
     (2, 2, now(), null),
-    (4, 3, now(), null)
+    (4, 3, now(), null),
+    (7, 4, now(), null)
     ;
 
 -- MULTIPLE_CHOICE_EXERCISE DATA
@@ -177,7 +188,11 @@ VALUES
     -- 1
     (3, 1, null, 'word', 'vietnamese', 'english', now(), null),
     -- 2
-    (5, 2, null, 'word', 'vietnamese', 'english', now(), null)
+    (5, 2, null, 'word', 'vietnamese', 'english', now(), null),
+    -- 3
+    (8, 3, null, 'word', 'vietnamese', 'english', now(), null),
+    -- 4
+    (10, null, 2, 'sentence', 'english', 'english', now(), null)
     ;
 
 -- MULTIPLE_CHOICE_OPTION DATA
@@ -193,5 +208,39 @@ VALUES
     (2, 4, null, 'word', false, now(), null),
     (2, 1, null, 'word', false, now(), null),
     (2, 2, null, 'word', true, now(), null),
-    (2, 3, null, 'word', false, now(), null)
+    (2, 3, null, 'word', false, now(), null),
+    -- 3
+    (3, 2, null, 'word', false, now(), null),
+    (3, 3, null, 'word', true, now(), null),
+    (3, 4, null, 'word', false, now(), null),
+    (3, 1, null, 'word', false, now(), null),
+    -- 4
+    (4, null, 1, 'sentence', false, now(), null),
+    (4, null, 2, 'sentence', true, now(), null),
+    (4, null, 3, 'sentence', false, now(), null),
+    (4, null, 4, 'sentence', false, now(), null)
+    ;
+
+-- MATCHING_EXERCISE DATA
+INSERT INTO tbl_matching_exercise
+    (exercise_id, created_at, updated_at)
+VALUES
+    -- 1
+    (6, now(), null),
+    -- 2
+    (9, now(), null)
+    ;
+
+-- MATCHING_PAIR DATA
+INSERT INTO tbl_matching_pair
+    (matching_exercise_id, word_id, created_at, updated_at)
+VALUES
+    -- 1
+    (1, 1, now(), null),
+    (1, 2, now(), null),
+    (1, 3, now(), null),
+    -- 2
+    (2, 1, now(), null),
+    (2, 2, now(), null),
+    (2, 4, now(), null)
     ;

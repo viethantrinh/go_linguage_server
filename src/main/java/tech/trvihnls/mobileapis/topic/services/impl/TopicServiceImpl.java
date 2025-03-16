@@ -9,6 +9,7 @@ import tech.trvihnls.commons.repositories.*;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.excercise.dtos.response.ExerciseDetailResponse;
+import tech.trvihnls.mobileapis.excercise.dtos.response.MatchingExerciseResponse;
 import tech.trvihnls.mobileapis.excercise.dtos.response.MultipleChoiceExerciseResponse;
 import tech.trvihnls.mobileapis.excercise.dtos.response.VocabularyExerciseResponse;
 import tech.trvihnls.mobileapis.lesson.dtos.response.LessonDetailResponse;
@@ -72,6 +73,12 @@ public class TopicServiceImpl implements TopicService {
                     exerciseDetails.add(buildMultipleChoiceExerciseResponse(e));
                 }
 
+                if (e.getMatchingExercise() != null) {
+                    exerciseDetails.add(buildMatchingExerciseResponse(e));
+                }
+
+
+
 //                if (e.get....Exercise() != null) {  // for another exercise type
 //
 //                }
@@ -91,7 +98,6 @@ public class TopicServiceImpl implements TopicService {
 
         return lessonDetails;
     }
-
 
     private ExerciseDetailResponse<VocabularyExerciseResponse> buildVocabularyExerciseResponse(Exercise exercise) {
 
@@ -206,4 +212,28 @@ public class TopicServiceImpl implements TopicService {
                 .data(multipleChoiceExerciseResponse)
                 .build();
     }
+
+    private ExerciseDetailResponse<List<MatchingExerciseResponse>> buildMatchingExerciseResponse(Exercise exercise) {
+        List<MatchingExerciseResponse> matchingExerciseResponses = new ArrayList<>();
+        List<MatchingPair> matchingPairs = exercise.getMatchingExercise().getMatchingPairs();
+
+        for (var p : matchingPairs) {
+            MatchingExerciseResponse matchingExerciseResponse = MatchingExerciseResponse.builder()
+                    .id(p.getId())
+                    .englishText(p.getWord().getEnglishText())
+                    .vietnameseText(p.getWord().getVietnameseText())
+                    .imageUrl(p.getWord().getImageUrl())
+                    .audioUrl(p.getWord().getAudioUrl())
+                    .build();
+            matchingExerciseResponses.add(matchingExerciseResponse);
+        }
+
+        return ExerciseDetailResponse.<List<MatchingExerciseResponse>>builder()
+                .id(exercise.getId())
+                .instruction(exercise.getInstruction())
+                .displayOrder(exercise.getDisplayOrder())
+                .data(matchingExerciseResponses)
+                .build();
+    }
+
 }

@@ -15,5 +15,5 @@ public class TopicResponse {
     private String imageUrl;
     private int displayOrder;
     private boolean isPremium;
-    private int totalUserXPPoints;
+    private int totalUserXPPoints = 0;
 }
