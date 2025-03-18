@@ -1,5 +1,6 @@
 package tech.trvihnls.mobileapis.lesson.dtos.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 import tech.trvihnls.mobileapis.excercise.dtos.response.ExerciseDetailResponse;
@@ -13,12 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"id", "name", "totalUserXPPoints", "lessonType", "displayOrder", "exercises"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LessonDetailResponse {
     private long id;
     private String name;
     private int totalUserXPPoints;
     private int lessonType; // lesson type id
     private int displayOrder;
-    @Builder.Default
-    private List<ExerciseDetailResponse<?>> exercises = new ArrayList<>();
+    private List<?> exercises = null;
 }

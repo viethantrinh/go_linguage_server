@@ -36,4 +36,22 @@ public class Topic extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "topic")
     private List<Lesson> lessons = new ArrayList<>(); // list of lessons in this topic
+
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_topic_word",
+            joinColumns = @JoinColumn(name = "topic_id"),
+            inverseJoinColumns = @JoinColumn(name = "word_id")
+    )
+    private List<Word> words = new ArrayList<>();
+
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_topic_sentence",
+            joinColumns = @JoinColumn(name = "topic_id"),
+            inverseJoinColumns = @JoinColumn(name = "sentence_id")
+    )
+    private List<Sentence> sentences = new ArrayList<>();
 }

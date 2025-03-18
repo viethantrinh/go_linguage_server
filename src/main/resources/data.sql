@@ -136,6 +136,24 @@ VALUES
        (4, 4)
         ;
 
+-- TOPIC_WORD DATA
+INSERT INTO tbl_topic_word
+    (topic_id, word_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4);
+
+-- TOPIC_SENTENCE DATA
+INSERT INTO tbl_topic_sentence
+(topic_id, sentence_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4);
+
 -- EXERCISE_TYPE DATA
 INSERT INTO tbl_exercise_type (name, description, created_at, updated_at)
 VALUES -- 1, 2, 3, 4, 5, 6
@@ -331,3 +349,4 @@ VALUES
     (1, 'B', 'See you later!', 'Hẹn gặp lại!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138960/755a8727-8ef1-4e9b-8e70-fbae7b92694b.ogg', 9, true, 'you', now(), null),
     (1, 'A', 'Good luck!', 'Chúc may mắn!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138952/67109268-15b4-45f4-8db8-a5af5c726ac6.ogg', 10, false, null, now(), null)
 ;
+

@@ -28,7 +28,7 @@ public class WordArrangementExercise extends BaseEntity {
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "sentence_id")
     private Sentence sentence;
 

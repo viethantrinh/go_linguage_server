@@ -11,4 +11,9 @@ import java.util.List;
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     @Query("select e from Exercise e where e.lesson.id = ?1 order by e.displayOrder asc")
     List<Exercise> findByLessonIdOrderByDisplayOrderAsc(Long id);
+
+    @Query("select e from Exercise e where e.lesson.id = ?1")
+    List<Exercise> findByLessonId(Long id);
+
+
 }
