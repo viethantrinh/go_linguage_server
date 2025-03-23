@@ -15,5 +15,6 @@ public class TopicResponse {
     private String imageUrl;
     private int displayOrder;
     private boolean isPremium;
+    @Builder.Default
     private int totalUserXPPoints = 0;
 }

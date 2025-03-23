@@ -11,6 +11,7 @@ package tech.trvihnls.mobileapis.topic.services.impl;
     import tech.trvihnls.commons.repositories.UserLessonAttemptRepository;
     import tech.trvihnls.commons.utils.SecurityUtils;
     import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+    import tech.trvihnls.commons.utils.enums.SpeakerEnum;
     import tech.trvihnls.mobileapis.excercise.dtos.response.*;
     import tech.trvihnls.mobileapis.lesson.dtos.response.LessonDetailResponse;
     import tech.trvihnls.mobileapis.topic.services.TopicService;
@@ -321,13 +322,23 @@ package tech.trvihnls.mobileapis.topic.services.impl;
             List<DialogueExerciseLine> dialogueExerciseLines = dialogueExercise.getDialogueExerciseLines();
             List<DialogueExerciseResponse.DialogueLineResponse> dialogueLineResponses = new ArrayList<>();
             for (DialogueExerciseLine d : dialogueExerciseLines) {
-                DialogueExerciseResponse.DialogueLineResponse dialogueLineResponse = DialogueExerciseResponse.DialogueLineResponse.builder()
-                        .speaker(d.getSpeaker())
-                        .englishText(d.getEnglishText())
+                DialogueExerciseResponse.DialogueLineResponse.DialogueLineResponseBuilder builder = DialogueExerciseResponse.DialogueLineResponse.builder();
+
+                builder.isChangeSpeaker(d.getSpeaker().equals(SpeakerEnum.A)); // true if speaker is A, false when speaker is B
+
+                // handler english blank text
+                if (d.isHasBlank()) {
+                    String blankWord = d.getBlankWord();
+                    String blankEnglishText = d.getEnglishText().replace(blankWord, "[]");
+                    builder.englishText(blankEnglishText);
+                } else {
+                    builder.englishText(d.getEnglishText());
+                }
+
+                DialogueExerciseResponse.DialogueLineResponse dialogueLineResponse = builder
                         .vietnameseText(d.getVietnameseText())
                         .audioUrl(d.getAudioUrl())
                         .displayOrder(d.getDisplayOrder())
-                        .hasBlank(d.isHasBlank())
                         .blankWord(d.getBlankWord())
                         .build();
                 dialogueLineResponses.add(dialogueLineResponse);

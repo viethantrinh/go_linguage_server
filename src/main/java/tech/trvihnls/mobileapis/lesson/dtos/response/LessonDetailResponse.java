@@ -21,5 +21,6 @@ public class LessonDetailResponse {
     private int totalUserXPPoints;
     private int lessonType; // lesson type id
     private int displayOrder;
-    private List<?> exercises = null;
+    @Builder.Default
+    private List<?> exercises = new ArrayList<>();
 }

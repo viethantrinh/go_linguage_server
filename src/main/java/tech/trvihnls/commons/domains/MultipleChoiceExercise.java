@@ -42,5 +42,6 @@ public class MultipleChoiceExercise extends BaseEntity {
     private Sentence sentence;
 
     @OneToMany(mappedBy = "multipleChoiceExercise")
+    @Builder.Default
     private List<MultipleChoiceOption> multipleChoiceOptions = new ArrayList<>();
 }

@@ -25,15 +25,14 @@ public class DialogueExerciseResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonPropertyOrder({"speaker", "englishText", "vietnameseText", "audioUrl", "displayOrder", "hasBlank", "blankWord"})
+    @JsonPropertyOrder({"isChangeSpeaker", "englishText", "vietnameseText", "audioUrl", "displayOrder", "blankWord"})
     public static class DialogueLineResponse {
-        private SpeakerEnum speaker;
+        @JsonProperty("isChangeSpeaker")
+        private boolean isChangeSpeaker;
         private String englishText;
         private String vietnameseText;
         private String audioUrl;
         private int displayOrder;
-        @JsonProperty("hasBlank")
-        private boolean hasBlank;
         private String blankWord;
     }
 }

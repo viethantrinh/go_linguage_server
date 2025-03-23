@@ -20,8 +20,9 @@ public enum ErrorCodeEnum {
     PAYMENT_ERROR(5010, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by stripe exception"),
     UPLOAD_RESOURCE_FAILED(5011, HttpStatus.INTERNAL_SERVER_ERROR, "Error caused by uploading resource failed"),
     RELATED_SENTENCES_NOT_EXISTED(5012, HttpStatus.NOT_FOUND, "Error caused by related sentences not existed"),
-    RESOURCE_CONFLICT(5013, HttpStatus.CONFLICT,"Error caused by some resources conflicted"),
-    TOPIC_NOT_EXISTED(5014, HttpStatus.NOT_FOUND, "Error caused by topic not existed");
+    RESOURCE_CONFLICT(5013, HttpStatus.CONFLICT, "Error caused by some resources conflicted"),
+    TOPIC_NOT_EXISTED(5014, HttpStatus.NOT_FOUND, "Error caused by topic not existed"),
+    BAD_REQUEST(5015, HttpStatus.BAD_REQUEST, "Error caused by invalid request");
 
     private final int code;
     private final HttpStatus status;

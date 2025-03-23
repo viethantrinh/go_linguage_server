@@ -30,6 +30,7 @@ public class Word extends BaseEntity {
     @OneToOne(mappedBy = "word")
     private VocabularyExercise vocabularyExercise;
 
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "tbl_word_sentence",

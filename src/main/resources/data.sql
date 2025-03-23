@@ -310,7 +310,7 @@ VALUES
     -- 2 : id của word_arrangement_exercise_id
     (2, 'mười', true, -1, now(), null),
     (2, 'ông', false, 5, now(), null),
-    (2, 'bạn', true, 0, now(), null),
+    (2, 'bạn', false, 0, now(), null),
     (2, 'nhật', true, -1, now(), null),
     (2, 'người', false, 3, now(), null),
     (2, 'là', false, 1, now(), null),
