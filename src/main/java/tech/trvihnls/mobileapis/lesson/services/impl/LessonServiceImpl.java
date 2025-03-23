@@ -24,6 +24,8 @@ public class LessonServiceImpl implements LessonService {
     private final UserLessonAttemptRepository userLessonAttemptRepository;
     private final UserRepository userRepository;
 
+
+    // TODO: draft
     /**
      * Submits a lesson attempt for a user.
      *

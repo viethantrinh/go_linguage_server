@@ -269,8 +269,8 @@ VALUES
     (3, 1, null, 'word', false, now(), null),
     -- 4 : id của multiple_choice_exercise_id
     (4, null, 1, 'sentence', false, now(), null),
-    (4, null, 2, 'sentence', true, now(), null),
-    (4, null, 3, 'sentence', false, now(), null),
+    (4, null, 2, 'sentence', false, now(), null),
+    (4, null, 3, 'sentence', true, now(), null),
     (4, null, 4, 'sentence', false, now(), null),
     -- 5 : id của multiple_choice_exercise_id
     (5, null, 4, 'sentence', false, now(), null),
