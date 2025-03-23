@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import tech.trvihnls.mobileapis.user.services.UserService;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+// TODO: test
 @ActiveProfiles({"test"})
 @WebMvcTest({UserController.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

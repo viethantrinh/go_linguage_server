@@ -7,10 +7,15 @@ import tech.trvihnls.commons.domains.UserLessonAttempt;
 import tech.trvihnls.commons.domains.UserLessonAttemptId;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserLessonAttemptRepository extends JpaRepository<UserLessonAttempt, UserLessonAttemptId> {
   @Query("select u from UserLessonAttempt u where u.user.id = ?1")
   List<UserLessonAttempt> findByUserId(Long id);
+
+  @Query("select u from UserLessonAttempt u where u.id.userId = ?1 and u.id.lessonId = ?2")
+  Optional<UserLessonAttempt> findByUserIdAndLessonId(Long userId, Long lessonId);
+
 
 }

@@ -56,4 +56,13 @@ public class User extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<UserLessonAttempt> userLessonAttempts = new ArrayList<>(); // lessons attempts of this user
+
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(
+            name = "tbl_user_achievement",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "achievement_id")
+    )
+    private List<Achievement> achievements = new ArrayList<>();
 }

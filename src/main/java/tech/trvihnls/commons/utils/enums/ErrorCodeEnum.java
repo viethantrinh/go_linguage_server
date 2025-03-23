@@ -22,7 +22,8 @@ public enum ErrorCodeEnum {
     RELATED_SENTENCES_NOT_EXISTED(5012, HttpStatus.NOT_FOUND, "Error caused by related sentences not existed"),
     RESOURCE_CONFLICT(5013, HttpStatus.CONFLICT, "Error caused by some resources conflicted"),
     TOPIC_NOT_EXISTED(5014, HttpStatus.NOT_FOUND, "Error caused by topic not existed"),
-    BAD_REQUEST(5015, HttpStatus.BAD_REQUEST, "Error caused by invalid request");
+    BAD_REQUEST(5015, HttpStatus.BAD_REQUEST, "Error caused by invalid request"),
+    LEARNING_MATERIAL_NOT_EXISTED(5016, HttpStatus.NOT_FOUND, "Error caused by learning material not existed");
 
     private final int code;
     private final HttpStatus status;
