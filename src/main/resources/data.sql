@@ -3,7 +3,7 @@ INSERT INTO tbl_user (name, email, password, enabled, total_streak_points, total
                       total_go_points, created_at, updated_at)
 VALUES
     ('han', 'hntrnn12@gmail.com', '$2a$10$FOozZpsLs4czytM1kxKpR.46tcuu5E5L5EaUrDAnIM0vDcjyCZBRe', true, 0,
-        0, 0, now(), null),
+        6, 450, now(), null),
     ('hang', 'hntrnn13@gmail.com', '$2a$10$rSCAMW7Thggyo3OtawWXPe3b0RDkXtsSs2IBk2hMQXDy2PqW8UZ1.', true, 0,
         0, 0, now(), null);
 
@@ -28,6 +28,29 @@ VALUES
     ('6 tháng', 799000, 'price_1QzOSbIYP7o7tjuBfXxxgubc', 6, now(), null),
     ('12 tháng', 2399000, 'price_1QzOTsIYP7o7tjuBCcd92WnP', 12, now(), null),
     ('Trọn đời', 4999000, 'price_1QzOVxIYP7o7tjuBJBFcFr5u', 12000, now(), null);
+
+-- ACHIEVEMENT DATA
+INSERT INTO tbl_achievement (name, description, image_url, xp_reward, streak_reward, go_reward, created_at, updated_at)
+VALUES
+    -- 1
+    ('Hành trình của người mới bắt đầu', 'Bạn đã hoàn thành bài học đầu tiên của mình', '', 0, 1, 0, now(), null),
+    -- 2
+    ('Quả cầu lửa', 'Bạn đã hoàn thành chuỗi 3 ngày', '', 0, 3, 0, now(), null),
+    -- 3
+    ('Nhà vô địch go points', 'Kiếm 1500 điểm go points', '', 0, 0, 1500, now(), null),
+    -- 4
+    ('Pháo hoa', 'Hoàn thành chuỗi 7 ngày', '',0, 7, 0, now(), null),
+    -- 5
+    ('Sao chổi', 'Hoàn thành chuỗi 14 ngày', '',0, 14, 0, now(), null),
+    -- 6
+    ('Người thành đạt', 'Kiếm 5000 điểm chuối', '',0, 0, 5000, now(), null)
+    ;
+
+-- USER ACHIEVEMENT DATA
+INSERT INTO tbl_user_achievement (user_id, achievement_id)
+VALUES
+    (1, 1)
+    ;
 
 -- LEVEL DATA
 INSERT INTO tbl_level (name, description, display_order, created_at, updated_at)
@@ -220,7 +243,7 @@ VALUES
     -- 3
     (8, 3, null, 'word', 'vietnamese', 'english', now(), null),
     -- 4
-    (10, null, 2, 'sentence', 'english', 'english', now(), null),
+    (10, null, 3, 'audio', 'english', 'english', now(), null),
     -- 5
     (14, null, 1, 'sentence', 'english', 'vietnamese', now(), null)
     ;
