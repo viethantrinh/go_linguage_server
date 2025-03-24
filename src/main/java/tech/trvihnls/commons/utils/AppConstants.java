@@ -10,4 +10,6 @@ public class AppConstants {
 
     public static String BASE_LOCAL_URL = "http://localhost:8080";
     public static String BASE_REMOTE_URL = "https://go-linguage-server-9ab98bbccd59.herokuapp.com";
+
+    public static final String GROQ_TRANSCRIBE_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 }

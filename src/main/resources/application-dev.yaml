@@ -57,3 +57,6 @@ cloudinary:
   api-key: 484782622769588
   api-secret: Bzj4HHpECmgfbtLjR7RZxMdFerk
 
+# config for groq ai
+groq:
+  api-key: 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
