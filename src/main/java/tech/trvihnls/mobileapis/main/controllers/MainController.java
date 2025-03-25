@@ -10,6 +10,7 @@ import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.mobileapis.main.dtos.response.HomeResponse;
+import tech.trvihnls.mobileapis.main.dtos.response.ReviewResponse;
 import tech.trvihnls.mobileapis.main.services.MainService;
 
 @Slf4j
@@ -23,6 +24,12 @@ public class MainController {
     @GetMapping("/home")
     public ResponseEntity<ApiResponse<HomeResponse>> getHomeData() {
         HomeResponse response = mainService.retrieveHomeData();
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @GetMapping("/review")
+    public ResponseEntity<ApiResponse<ReviewResponse>> getReviewData() {
+        ReviewResponse response = mainService.retrieveReviewData();
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

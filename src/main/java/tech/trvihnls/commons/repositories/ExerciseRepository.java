@@ -15,5 +15,6 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     @Query("select e from Exercise e where e.lesson.id = ?1")
     List<Exercise> findByLessonId(Long id);
 
-
+    @Query("select e from Exercise e where e.lesson.id = ?1 and e.exerciseType.id = ?2")
+    List<Exercise> findByLessonIdAndExerciseTypeId(Long lessonId, Long exerciseTypeId);
 }
