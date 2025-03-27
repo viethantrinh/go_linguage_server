@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
+import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationResponse;
 import tech.trvihnls.mobileapis.main.dtos.response.HomeResponse;
 import tech.trvihnls.mobileapis.main.dtos.response.ReviewResponse;
 import tech.trvihnls.mobileapis.main.services.MainService;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,6 +33,12 @@ public class MainController {
     @GetMapping("/review")
     public ResponseEntity<ApiResponse<ReviewResponse>> getReviewData() {
         ReviewResponse response = mainService.retrieveReviewData();
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @GetMapping("/conversation")
+    public ResponseEntity<ApiResponse<List<ConversationResponse>>> getConversationData() {
+        List<ConversationResponse> response = mainService.retrieveConversationData();
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

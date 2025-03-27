@@ -9,6 +9,7 @@ import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.*;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.*;
+import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationResponse;
 import tech.trvihnls.mobileapis.level.dtos.response.LevelResponse;
 import tech.trvihnls.mobileapis.main.dtos.response.*;
 import tech.trvihnls.mobileapis.main.services.MainService;
@@ -29,6 +30,7 @@ public class MainServiceImpl implements MainService {
     private final TopicRepository topicRepository;
     private final LessonRepository lessonRepository;
     private final ExerciseRepository exerciseRepository;
+    private final ConversationRepository conversationRepository;
     private final TopicService topicService;
 
 
@@ -520,5 +522,21 @@ public class MainServiceImpl implements MainService {
                 .build());
     }
 
+    @Override
+    public List<ConversationResponse> retrieveConversationData() {
+        List<Conversation> conversations = conversationRepository.findByOrderByDisplayOrderAsc();
 
+        List<ConversationResponse> conversationResponses = new ArrayList<>();
+        for (Conversation c : conversations) {
+            ConversationResponse conversationResponse = ConversationResponse.builder()
+                    .id(c.getId())
+                    .name(c.getName())
+                    .imageUrl(c.getImageUrl())
+                    .displayOrder(c.getDisplayOrder())
+                    .build();
+            conversationResponses.add(conversationResponse);
+        }
+
+        return conversationResponses;
+    }
 }

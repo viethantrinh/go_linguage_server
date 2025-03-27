@@ -31,7 +31,7 @@ public class ConversationLine extends BaseEntity {
     @Column(name = "system_audio_url")
     private String systemAudioUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
 

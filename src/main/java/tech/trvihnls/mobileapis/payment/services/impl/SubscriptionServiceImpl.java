@@ -1,4 +1,4 @@
-package tech.trvihnls.mobileapis.main.services.impl;
+package tech.trvihnls.mobileapis.payment.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,7 +6,7 @@ import tech.trvihnls.commons.domains.Subscription;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.SubscriptionRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
-import tech.trvihnls.mobileapis.main.services.SubscriptionService;
+import tech.trvihnls.mobileapis.payment.services.SubscriptionService;
 
 @Service
 @RequiredArgsConstructor

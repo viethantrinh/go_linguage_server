@@ -1,10 +1,10 @@
-package tech.trvihnls.mobileapis.main.services.impl;
+package tech.trvihnls.mobileapis.payment.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tech.trvihnls.commons.domains.UserSubscription;
 import tech.trvihnls.commons.repositories.UserSubscriptionRepository;
-import tech.trvihnls.mobileapis.main.services.UserSubscriptionService;
+import tech.trvihnls.mobileapis.payment.services.UserSubscriptionService;
 
 @Service
 @RequiredArgsConstructor

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ConversationEntryGenderEnum {
-    male("male"), female("female");
+    male("male", "nam"), female("female", "nữ");
     private final String value;
+    private final String vietnameseGender;
 }

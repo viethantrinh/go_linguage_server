@@ -25,7 +25,7 @@ public class ConversationUserOption extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConversationEntryGenderEnum gender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_line_id")
     private ConversationLine conversationLine;
 }

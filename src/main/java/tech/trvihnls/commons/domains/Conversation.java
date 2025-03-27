@@ -1,9 +1,6 @@
 package tech.trvihnls.commons.domains;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -27,6 +24,6 @@ public class Conversation extends BaseEntity {
     private int displayOrder;
 
     @Builder.Default
-    @OneToMany(mappedBy = "conversation")
-    List<ConversationLine> conversationEntries = new ArrayList<>();
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    List<ConversationLine> conversationLines = new ArrayList<>();
 }

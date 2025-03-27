@@ -1,4 +1,4 @@
-package tech.trvihnls.mobileapis.main.services;
+package tech.trvihnls.mobileapis.payment.services;
 
 import tech.trvihnls.commons.domains.Subscription;
 
