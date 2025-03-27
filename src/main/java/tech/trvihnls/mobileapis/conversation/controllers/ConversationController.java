@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
+import tech.trvihnls.mobileapis.conversation.dtos.request.ConversationSubmitRequest;
 import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationLineResponse;
 import tech.trvihnls.mobileapis.conversation.services.ConversationService;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/conversation")
+@RequestMapping("/conversations")
 public class ConversationController {
 
     private final ConversationService conversationService;
@@ -31,6 +32,12 @@ public class ConversationController {
     public ResponseEntity<ApiResponse<String>> pronoun(@RequestParam("audio") MultipartFile audioFile,
                                                        @RequestParam("conversationLineId") String conversationLineId) {
         var response = conversationService.processConversationPronoun(audioFile, Long.parseLong(conversationLineId));
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<ApiResponse<Integer>> pronoun(@RequestBody ConversationSubmitRequest request) {
+        var response = conversationService.submitConversation(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

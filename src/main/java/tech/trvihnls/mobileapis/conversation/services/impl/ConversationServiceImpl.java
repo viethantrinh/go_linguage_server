@@ -6,16 +6,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.domains.ConversationUserOption;
+import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.ConversationLineRepository;
 import tech.trvihnls.commons.repositories.ConversationUserOptionRepository;
+import tech.trvihnls.commons.repositories.UserRepository;
+import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.ai.services.GroqTranscribeService;
+import tech.trvihnls.mobileapis.conversation.dtos.request.ConversationSubmitRequest;
 import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationLineResponse;
 import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationUserOptionResponse;
 import tech.trvihnls.mobileapis.conversation.services.ConversationService;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class ConversationServiceImpl implements ConversationService {
     private final ConversationLineRepository conversationLineRepository;
     private final ConversationUserOptionRepository conversationUserOptionRepository;
     private final GroqTranscribeService groqTranscribeService;
+    private final UserRepository userRepository;
 
     @Override
     public List<ConversationLineResponse> getConversationDetail(long id) {
@@ -103,5 +110,15 @@ public class ConversationServiceImpl implements ConversationService {
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    @Override
+    public int submitConversation(ConversationSubmitRequest request) {
+        int points = request.getGoPoints();
+        User user = userRepository.findById(Objects.requireNonNull(SecurityUtils.getCurrentUserId()))
+                .orElseThrow(() -> new AppException(ErrorCodeEnum.USER_NOT_EXISTED));
+        user.setTotalGoPoints(user.getTotalGoPoints() + points);
+        User savedUser = userRepository.save(user);
+        return savedUser.getTotalGoPoints();
     }
 }
