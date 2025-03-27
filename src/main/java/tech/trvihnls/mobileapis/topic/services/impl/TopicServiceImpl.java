@@ -70,17 +70,17 @@ public class TopicServiceImpl implements TopicService {
         return userAttemptedLessons.stream()
                 .filter(attempt -> lessonIds.contains(attempt.getLesson().getId()))
                 .collect(Collectors.toMap(
-                    attempt -> attempt.getLesson().getId(),
-                    UserLessonAttempt::getXpPointsEarned
+                        attempt -> attempt.getLesson().getId(),
+                        UserLessonAttempt::getXpPointsEarned
                 ));
     }
 
     /**
      * Builds detailed lesson responses including all exercises.
      *
-     * @param lessons List of lessons to build responses for
+     * @param lessons           List of lessons to build responses for
      * @param lessonXpPointsMap Map of lesson IDs to XP points
-     * @param topicId ID of the parent topic
+     * @param topicId           ID of the parent topic
      * @return List of detailed lesson responses
      */
     private List<LessonDetailResponse> buildLessonDetailResponses(
@@ -105,7 +105,7 @@ public class TopicServiceImpl implements TopicService {
     /**
      * Builds exercise details for a specific lesson.
      *
-     * @param lesson The lesson to build exercise details for
+     * @param lesson  The lesson to build exercise details for
      * @param topicId ID of the parent topic
      * @return List of exercise details
      */
@@ -131,7 +131,7 @@ public class TopicServiceImpl implements TopicService {
     /**
      * Adds an exercise to the details list based on its type.
      *
-     * @param exercise The exercise to add
+     * @param exercise        The exercise to add
      * @param exerciseDetails The list to add the exercise to
      */
     private void addExerciseToDetailsList(Exercise exercise, List<Object> exerciseDetails) {
@@ -146,7 +146,9 @@ public class TopicServiceImpl implements TopicService {
         } else if (exercise.getDialogueExercise() != null) {
             exerciseDetails.add(buildDialogueExerciseResponse(exercise));
         }
-    }/**
+    }
+
+    /**
      * Builds a response for a vocabulary exercise.
      * This maps a Word entity to a vocabulary exercise response including:
      * - Word text in English and Vietnamese
@@ -194,7 +196,9 @@ public class TopicServiceImpl implements TopicService {
                 .vietnameseText(sentence.getVietnameseText())
                 .audioUrl(sentence.getAudioUrl())
                 .build();
-    }/**
+    }
+
+    /**
      * Builds a response for a multiple choice exercise.
      * This maps a MultipleChoiceExercise entity to a structured response including:
      * - Question (from either a Word or Sentence)
@@ -248,14 +252,14 @@ public class TopicServiceImpl implements TopicService {
         if (exercise.getWord() != null) {
             Word word = exercise.getWord();
             builder.englishText(word.getEnglishText())
-                   .vietnameseText(word.getVietnameseText())
-                   .imageUrl(word.getImageUrl())
-                   .audioUrl(word.getAudioUrl());
+                    .vietnameseText(word.getVietnameseText())
+                    .imageUrl(word.getImageUrl())
+                    .audioUrl(word.getAudioUrl());
         } else if (exercise.getSentence() != null) {
             Sentence sentence = exercise.getSentence();
             builder.englishText(sentence.getEnglishText())
-                   .vietnameseText(sentence.getVietnameseText())
-                   .audioUrl(sentence.getAudioUrl());
+                    .vietnameseText(sentence.getVietnameseText())
+                    .audioUrl(sentence.getAudioUrl());
         }
 
         return builder;
@@ -284,20 +288,22 @@ public class TopicServiceImpl implements TopicService {
                     if (option.getWord() != null) {
                         Word word = option.getWord();
                         builder.englishText(word.getEnglishText())
-                               .vietnameseText(word.getVietnameseText())
-                               .imageUrl(word.getImageUrl())
-                               .audioUrl(word.getAudioUrl());
+                                .vietnameseText(word.getVietnameseText())
+                                .imageUrl(word.getImageUrl())
+                                .audioUrl(word.getAudioUrl());
                     } else if (option.getSentence() != null) {
                         Sentence sentence = option.getSentence();
                         builder.englishText(sentence.getEnglishText())
-                               .vietnameseText(sentence.getVietnameseText())
-                               .audioUrl(sentence.getAudioUrl());
+                                .vietnameseText(sentence.getVietnameseText())
+                                .audioUrl(sentence.getAudioUrl());
                     }
 
                     return builder.build();
                 })
                 .collect(Collectors.toList());
-    }/**
+    }
+
+    /**
      * Builds a response for a matching exercise.
      * This maps MatchingPairs to a list of matching exercise responses,
      * each containing a word's details for the matching activity.
@@ -318,7 +324,9 @@ public class TopicServiceImpl implements TopicService {
                 .collect(Collectors.toList());
 
         return createExerciseDetailResponse(exercise, matchingResponses);
-    }/**
+    }
+
+    /**
      * Builds a response for a word arrangement exercise.
      * This maps a WordArrangementExercise to a structured response including:
      * - The sentence to be arranged
@@ -365,7 +373,9 @@ public class TopicServiceImpl implements TopicService {
                 .build();
 
         return createExerciseDetailResponse(exercise, response);
-    }/**
+    }
+
+    /**
      * Builds a response for a dialogue exercise.
      * This maps a DialogueExercise to a structured response including:
      * - Context information
@@ -417,7 +427,9 @@ public class TopicServiceImpl implements TopicService {
         }
 
         return builder.build();
-    }/**
+    }
+
+    /**
      * Builds speaking exercise responses for a speaking lesson.
      * This method:
      * 1. Retrieves words and sentences from the topic
@@ -425,7 +437,7 @@ public class TopicServiceImpl implements TopicService {
      * 3. Selects up to 6 items
      * 4. Creates speaking exercise responses for each item
      *
-     * @param topicId The ID of the topic
+     * @param topicId         The ID of the topic
      * @param exerciseDetails The list to add speaking exercises to
      * @throws ResourceNotFoundException if the topic doesn't exist
      */
@@ -486,14 +498,16 @@ public class TopicServiceImpl implements TopicService {
                 .vietnameseText(sentence.getVietnameseText())
                 .audioUrl(sentence.getAudioUrl())
                 .build();
-    }/**
+    }
+
+    /**
      * Builds exercises for an exam lesson by:
      * 1. Finding exercises from core lessons in the same topic
      * 2. Filtering for multiple choice and word arrangement exercises
      * 3. Randomly selecting up to 7 of each type
      * 4. Adding them to the exercise list in alternating order
      *
-     * @param topicId The ID of the topic
+     * @param topicId         The ID of the topic
      * @param exerciseDetails The list to add exam exercises to
      */
     private void buildExercisesForExamLesson(long topicId, List<Object> exerciseDetails) {
@@ -556,8 +570,8 @@ public class TopicServiceImpl implements TopicService {
     /**
      * Adds exercises to the exam lesson in alternating order.
      *
-     * @param mcExercises Multiple choice exercises
-     * @param waExercises Word arrangement exercises
+     * @param mcExercises     Multiple choice exercises
+     * @param waExercises     Word arrangement exercises
      * @param exerciseDetails The list to add exercises to
      */
     private void addExercisesToExamLesson(
@@ -587,7 +601,7 @@ public class TopicServiceImpl implements TopicService {
      * Creates a standardized exercise detail response with common fields.
      *
      * @param exercise The exercise entity
-     * @param data The specific exercise data
+     * @param data     The specific exercise data
      * @return A standardized exercise detail response
      */
     private <T> ExerciseDetailResponse<T> createExerciseDetailResponse(Exercise exercise, T data) {

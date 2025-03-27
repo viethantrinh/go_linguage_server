@@ -373,3 +373,86 @@ VALUES
     (1, 'A', 'Good luck!', 'Chúc may mắn!', 'https://res.cloudinary.com/golinguage/video/upload/v1742138952/67109268-15b4-45f4-8db8-a5af5c726ac6.ogg', 10, false, null, now(), null)
 ;
 
+
+-- CONVERSATION DATA
+INSERT INTO tbl_conversation (name, image_url, display_order, created_at, updated_at)
+VALUES
+    -- 1
+    ('Lời chào hỏi', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 1, now(), null),
+    -- 2
+    ('Tự giới thiệu', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 2, now(), null),
+    -- 3
+    ('Số đếm & Gia đình', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 3, now(), null),
+    -- 4
+    ('Trong quán cà phê', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 4, now(), null),
+    -- 5
+    ('Địa điểm & Vị trí', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 5, now(), null),
+    -- 6
+    ('Trong nhà hàng', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 6, now(), null),
+    -- 7
+    ('Tại cửa hàng quần áo', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 7, now(), null),
+    -- 8
+    ('Phụ kiện', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 8, now(), null),
+    -- 9
+    ('Trong nhà hàng', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 9, now(), null),
+    -- 10
+    ('Trong văn phòng', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 10, now(), null),
+    -- 11
+    ('Tại khu liên hợp thể thao', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 11, now(), null),
+    -- 12
+    ('Âm nhạc', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 12, now(), null),
+    -- 13
+    ('Đây là đâu?', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 13, now(), null),
+    -- 14
+    ('Trong taxi', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 14, now(), null),
+    -- 15
+    ('Công việc & Nơi làm việc', 'https://res.cloudinary.com/golinguage/image/upload/v1741582250/071cd054-5d90-4b6a-86e3-22a392e4a9fb.webp', 15, now(), null);
+
+
+-- CONVERSATION_LINE DATA
+INSERT INTO tbl_conversation_line (conversation_id, display_order, type, system_english_text, system_vietnamese_text, system_audio_url, created_at, updated_at)
+VALUES
+    -- 1
+    (1, 1, 'system', 'Hello!', 'Xin chào!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053811/8660207e-0779-4213-a68b-5f5c00f72b25.ogg', now(), null),
+    -- 2
+    (1, 2, 'user', null, null, null, now(), null),
+    -- 3
+    (1, 3, 'system', 'How are you?', 'Bạn khỏe không?', 'https://res.cloudinary.com/golinguage/video/upload/v1743053813/373dbb72-c637-46bd-ae65-784eb8577c76.ogg', now(), null),
+    -- 4
+    (1, 4, 'user', null, null, null, now(), null),
+    -- 5
+    (1, 5, 'user', null, null, null, now(), null),
+    -- 6
+    (1, 6, 'system', 'I am fine', 'Tôi khỏe', 'https://res.cloudinary.com/golinguage/video/upload/v1743053799/6fe7986e-03f3-44c7-9b72-118d0d995ebb.ogg', now(), null),
+    -- 7
+    (1, 7, 'system', 'See you soon', 'Hẹn gặp lại bạn sớm', 'https://res.cloudinary.com/golinguage/video/upload/v1743053793/74f3ec29-a636-4265-957f-82108bedeb6f.ogg', now(), null),
+    -- 8
+    (1, 8, 'user', null, null, null, now(), null);
+
+
+INSERT INTO tbl_conversation_user_option (conversation_line_id, english_text, vietnamese_text, audio_url, gender, created_at, updated_at)
+VALUES
+    -- 1
+    (2, 'Hello!', 'Xin chào!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053791/9471dcfd-c118-45ee-8c6c-9493322cb088.ogg', 'male', now(), null),
+    -- 2
+    (2, 'Good afternoon!', 'Chào buổi chiều!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053795/e8840370-3358-48cc-8940-cc34fae86dd3.ogg',  'male', now(), null),
+    -- 3
+    (2, 'Good morning!', 'Chào buổi sáng!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053807/24caada5-6d5b-47ed-b476-27c38a9ee4e2.ogg',  'female', now(), null),
+    -- 4
+    (4, 'I''m fine', 'Tôi khỏe', 'https://res.cloudinary.com/golinguage/video/upload/v1743053785/4848f2f2-4cf2-46a3-a7e5-fc6e075a69ee.ogg',  'male', now(), null),
+    -- 5
+    (4, 'I''m not feeling good', 'Tớ không khỏe lắm', 'https://res.cloudinary.com/golinguage/video/upload/v1743053809/61871229-71ab-46c9-86d7-bf229f5629ea.ogg',  'male', now(), null),
+    -- 6
+    (4, 'I''m very good. Thank you.', 'Tớ rất khỏe. Cảm ơn cậu.', 'https://res.cloudinary.com/golinguage/video/upload/v1743053787/8701c26b-6cde-4f5e-83fd-e04c76d892e6.ogg',  'male', now(), null),
+    -- 7
+    (4, 'I don''t feel so well', 'Tớ cảm thấy không khỏe lắm', 'https://res.cloudinary.com/golinguage/video/upload/v1743053801/80f6c878-4e91-42ea-a94b-9a27071dd7a2.ogg',  'male', now(), null),
+    -- 8
+    (5, 'And you?', 'Còn bạn thì sao?', 'https://res.cloudinary.com/golinguage/video/upload/v1743053803/952388cd-feac-42f8-9f7f-f3e989afd94e.ogg',  'male', now(), null),
+    -- 9
+    (5, 'How about you?', 'Vậy bạn thì sao?', 'https://res.cloudinary.com/golinguage/video/upload/v1743053805/10db68cf-5f9e-4d82-8107-77ad29bec67e.ogg',  'male', now(), null),
+    -- 10
+    (8, 'See you later!', 'Hẹn gặp lại nhé!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053797/9328a323-95c4-47d9-87a5-3a8aab127115.ogg',  'male', now(), null),
+    -- 11
+    (8, 'Goodbye!', 'Tạm biệt!', 'https://res.cloudinary.com/golinguage/video/upload/v1743053783/7a1169a2-ef71-462b-b213-31e02eaa8f53.ogg',  'female', now(), null),
+    -- 12
+    (8, 'See you soon', 'Gặp lại bạn sớm nhé', 'https://res.cloudinary.com/golinguage/video/upload/v1743053789/9d94deec-b750-4567-8fa7-df20509dc902.ogg',  'female', now(), null);
