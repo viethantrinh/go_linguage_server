@@ -493,7 +493,7 @@ public class MainServiceImpl implements MainService {
     private DialogueResponse mapDialogueExerciseToResponse(DialogueExercise dialogueExercise) {
         return DialogueResponse.builder()
                 .context(dialogueExercise.getContext())
-                .lines(dialogueExercise.getDialogueExerciseLines().stream()
+                .dialogueExerciseLines(dialogueExercise.getDialogueExerciseLines().stream()
                         .map(line -> DialogueLineResponse.builder()
                                 .isChangeSpeaker(SpeakerEnum.A.equals(line.getSpeaker()))
                                 .englishText(line.getEnglishText())

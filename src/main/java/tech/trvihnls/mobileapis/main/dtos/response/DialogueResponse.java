@@ -16,5 +16,5 @@ public class DialogueResponse {
     private String context;
 
     @Builder.Default
-    private List<DialogueLineResponse> lines = new ArrayList<>();
+    private List<DialogueLineResponse> dialogueExerciseLines = new ArrayList<>();
 }

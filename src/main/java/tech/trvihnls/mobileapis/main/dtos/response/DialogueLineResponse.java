@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"isChangeSpeaker", "englishText", "vietnameseText", "audioUrl", "displayOrder"})
+@JsonPropertyOrder({"isChangeSpeaker", "englishText", "vietnameseText", "audioUrl", "displayOrder", "blankWord"})
 public class DialogueLineResponse {
     @JsonProperty("isChangeSpeaker")
     private boolean isChangeSpeaker;
@@ -17,4 +17,5 @@ public class DialogueLineResponse {
     private String vietnameseText;
     private String audioUrl;
     private int displayOrder;
+    private String blankWord;
 }
