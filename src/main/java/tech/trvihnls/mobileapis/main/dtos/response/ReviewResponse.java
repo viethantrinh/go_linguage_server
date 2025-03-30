@@ -12,11 +12,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"exams", "flashCards", "previousLearned"})
+@JsonPropertyOrder({"exercises", "flashCards", "previousLearned"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReviewResponse {
     @Builder.Default
-    private List<Object> exams = new ArrayList<>();
+    private List<Object> exercises = new ArrayList<>();
 
     @Builder.Default
     private List<TopicReviewResponse<Object>> flashCards = new ArrayList<>();

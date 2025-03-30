@@ -205,7 +205,7 @@ public class MainServiceImpl implements MainService {
         List<Object> reviewExams = buildReviewExams(lessonsByTopic);
 
         return ReviewResponse.builder()
-                .exams(reviewExams.size() >= 2 ? reviewExams : null)
+                .exercises(reviewExams.size() >= 2 ? reviewExams : null)
                 .flashCards(flashCards)
                 .previousLearned(previousLearned)
                 .build();
