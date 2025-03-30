@@ -9,5 +9,5 @@ import java.util.List;
 public interface ConversationService {
     List<ConversationLineResponse> getConversationDetail(long id);
     String processConversationPronoun(MultipartFile audioFile, long conversationLineId);
-    int submitConversation(ConversationSubmitRequest request);
+    Object submitConversation(long conversationId, ConversationSubmitRequest request);
 }

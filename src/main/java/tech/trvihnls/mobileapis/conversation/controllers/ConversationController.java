@@ -35,9 +35,9 @@ public class ConversationController {
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 
-    @PostMapping("/submit")
-    public ResponseEntity<ApiResponse<Integer>> pronoun(@RequestBody ConversationSubmitRequest request) {
-        var response = conversationService.submitConversation(request);
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<ApiResponse<Object>> submitConversation(@RequestBody ConversationSubmitRequest request, @PathVariable String id) {
+        var response = conversationService.submitConversation(Long.parseLong(id), request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

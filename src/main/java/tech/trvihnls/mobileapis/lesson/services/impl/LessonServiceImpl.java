@@ -13,8 +13,6 @@ import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.lesson.dtos.request.LessonSubmitRequest;
 import tech.trvihnls.mobileapis.lesson.services.LessonService;
 
-import java.time.LocalDateTime;
-
 /**
  * Service implementation for handling lesson-related operations.
  */
@@ -26,14 +24,15 @@ public class LessonServiceImpl implements LessonService {
 
 
     // TODO: draft
+
     /**
      * Submits a lesson attempt for a user.
      *
      * @param lessonId the ID of the lesson being submitted
-     * @param request the request containing submission details
+     * @param request  the request containing submission details
      * @return an object representing the result of the submission
      * @throws ResourceNotFoundException if the user or lesson attempt is not found
-     * @throws AppException if the XP points are invalid
+     * @throws AppException              if the XP points are invalid
      */
     @Override
     public Object submitLesson(long lessonId, LessonSubmitRequest request) {
@@ -67,17 +66,8 @@ public class LessonServiceImpl implements LessonService {
         userLessonAttempt.setGoPointsEarned(newGoPointsEarned);
         user.setTotalGoPoints(user.getTotalGoPoints() + newGoPointsEarned);
 
-        // handle streak points (update)
-        LocalDateTime lastAttemptedDate = userLessonAttempt.getUpdatedAt() == null
-                ? userLessonAttempt.getCreatedAt() : userLessonAttempt.getUpdatedAt();
-
-        LocalDateTime currentAttemptedDate = LocalDateTime.now();
-
-        boolean isNewDay = currentAttemptedDate.toLocalDate().isAfter(lastAttemptedDate.toLocalDate());
-
-        if (isNewDay) { // if user submit lesson in new day after previous day by 1 day
-            user.setTotalStreakPoints(user.getTotalStreakPoints() + 1);
-        }
+        // handle streak points (+1)
+        user.setTotalStreakPoints(user.getTotalStreakPoints() + 1);
 
         userLessonAttemptRepository.save(userLessonAttempt);
         userRepository.save(user);

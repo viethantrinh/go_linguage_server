@@ -7,12 +7,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.domains.ConversationUserOption;
 import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.domains.UserConversationAttempt;
 import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.ConversationLineRepository;
 import tech.trvihnls.commons.repositories.ConversationUserOptionRepository;
+import tech.trvihnls.commons.repositories.UserConversationAttemptRepository;
 import tech.trvihnls.commons.repositories.UserRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
+import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.mobileapis.ai.services.GroqTranscribeService;
 import tech.trvihnls.mobileapis.conversation.dtos.request.ConversationSubmitRequest;
@@ -31,13 +34,14 @@ public class ConversationServiceImpl implements ConversationService {
     private final ConversationUserOptionRepository conversationUserOptionRepository;
     private final GroqTranscribeService groqTranscribeService;
     private final UserRepository userRepository;
+    private final UserConversationAttemptRepository userConversationAttemptRepository;
 
     @Override
     public List<ConversationLineResponse> getConversationDetail(long id) {
         return conversationLineRepository.findByConversationIdOrderByDisplayOrderAsc(id).stream()
                 .map(cl -> ConversationLineResponse.builder()
                         .id(cl.getId())
-                        .type(cl.getType())
+                        .isChangeSpeaker(cl.getType().equals(ConversationEntryTypeEnum.system))
                         .displayOrder(cl.getDisplayOrder())
                         .systemEnglishText(cl.getSystemEnglishText())
                         .systemVietnameseText(cl.getSystemVietnameseText())
@@ -113,11 +117,29 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public int submitConversation(ConversationSubmitRequest request) {
+    public Object submitConversation(long conversationId, ConversationSubmitRequest request) {
         int points = request.getGoPoints();
+
         User user = userRepository.findById(Objects.requireNonNull(SecurityUtils.getCurrentUserId()))
                 .orElseThrow(() -> new AppException(ErrorCodeEnum.USER_NOT_EXISTED));
+
+        UserConversationAttempt userConversationAttempt = userConversationAttemptRepository
+                .findByUserIdAndConversationId(user.getId(), conversationId).orElse(null);
+
+        UserConversationAttempt savedRecord = null;
+        if (userConversationAttempt == null) {
+            savedRecord = userConversationAttemptRepository.save(
+                    UserConversationAttempt.builder()
+                            .goPointsEarned(points)
+                            .build()
+            );
+        } else {
+            userConversationAttempt.setGoPointsEarned(userConversationAttempt.getGoPointsEarned() + points);
+            savedRecord = userConversationAttemptRepository.save(userConversationAttempt);
+        }
+
         user.setTotalGoPoints(user.getTotalGoPoints() + points);
+        user.setTotalXPPoints(user.getTotalXPPoints() + 1);
         User savedUser = userRepository.save(user);
         return savedUser.getTotalGoPoints();
     }

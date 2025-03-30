@@ -1,9 +1,9 @@
 package tech.trvihnls.mobileapis.conversation.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
-import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "type", "systemEnglishText", "systemVietnameseText", "systemAudioUrl", "displayOrder", "options"})
+@JsonPropertyOrder({"id", "isChangeSpeaker", "systemEnglishText", "systemVietnameseText", "systemAudioUrl", "displayOrder", "options"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ConversationLineResponse {
 
     private long id;
-    private ConversationEntryTypeEnum type;
+    @JsonProperty("isChangeSpeaker")
+    private boolean isChangeSpeaker;
     private String systemEnglishText;
     private String systemVietnameseText;
     private String systemAudioUrl;
