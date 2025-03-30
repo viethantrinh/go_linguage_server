@@ -5,9 +5,7 @@ import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import tech.trvihnls.commons.domains.ConversationUserOption;
-import tech.trvihnls.commons.domains.User;
-import tech.trvihnls.commons.domains.UserConversationAttempt;
+import tech.trvihnls.commons.domains.*;
 import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.ConversationLineRepository;
@@ -17,12 +15,15 @@ import tech.trvihnls.commons.repositories.UserRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.mobileapis.achievement.dtos.response.AchievementResponse;
 import tech.trvihnls.mobileapis.ai.services.GroqTranscribeService;
 import tech.trvihnls.mobileapis.conversation.dtos.request.ConversationSubmitRequest;
 import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationLineResponse;
+import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationSubmitResponse;
 import tech.trvihnls.mobileapis.conversation.dtos.response.ConversationUserOptionResponse;
 import tech.trvihnls.mobileapis.conversation.services.ConversationService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public class ConversationServiceImpl implements ConversationService {
     private final GroqTranscribeService groqTranscribeService;
     private final UserRepository userRepository;
     private final UserConversationAttemptRepository userConversationAttemptRepository;
+    private final AchievementRepository achievementRepository;
 
     @Override
     public List<ConversationLineResponse> getConversationDetail(long id) {
@@ -117,7 +119,7 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public Object submitConversation(long conversationId, ConversationSubmitRequest request) {
+    public ConversationSubmitResponse submitConversation(long conversationId, ConversationSubmitRequest request) {
         int points = request.getGoPoints();
 
         User user = userRepository.findById(Objects.requireNonNull(SecurityUtils.getCurrentUserId()))
@@ -126,21 +128,40 @@ public class ConversationServiceImpl implements ConversationService {
         UserConversationAttempt userConversationAttempt = userConversationAttemptRepository
                 .findByUserIdAndConversationId(user.getId(), conversationId).orElse(null);
 
-        UserConversationAttempt savedRecord = null;
         if (userConversationAttempt == null) {
-            savedRecord = userConversationAttemptRepository.save(
+            userConversationAttemptRepository.save(
                     UserConversationAttempt.builder()
+                            .id(UserConversationAttemptId.builder().userId(user.getId()).conversationId(conversationId).build())
                             .goPointsEarned(points)
                             .build()
             );
         } else {
             userConversationAttempt.setGoPointsEarned(userConversationAttempt.getGoPointsEarned() + points);
-            savedRecord = userConversationAttemptRepository.save(userConversationAttempt);
+            userConversationAttemptRepository.save(userConversationAttempt);
         }
 
         user.setTotalGoPoints(user.getTotalGoPoints() + points);
-        user.setTotalXPPoints(user.getTotalXPPoints() + 1);
+        user.setTotalStreakPoints(user.getTotalStreakPoints() + 1);
         User savedUser = userRepository.save(user);
-        return savedUser.getTotalGoPoints();
+
+        // if achieve any achievement, handle here
+        List<Achievement> achievements = achievementRepository.findAll();
+        List<AchievementResponse> achievementResponses = new ArrayList<>();
+        for (Achievement a : achievements) {
+            if (savedUser.getTotalGoPoints() >= a.getGoRewardCondition() && !savedUser.getAchievements().contains(a)) {
+                AchievementResponse achievementResponse = AchievementResponse.builder()
+                        .name(a.getName())
+                        .description(a.getDescription())
+                        .imageUrl(a.getImageUrl())
+                        .build();
+                achievementResponses.add(achievementResponse);
+                savedUser.getAchievements().add(a);
+                userRepository.save(user);
+            }
+        }
+
+        return ConversationSubmitResponse.builder()
+                .achievements(achievementResponses)
+                .build();
     }
 }

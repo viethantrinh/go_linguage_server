@@ -30,27 +30,25 @@ VALUES
     ('Trọn đời', 4999000, 'price_1QzOVxIYP7o7tjuBJBFcFr5u', 12000, now(), null);
 
 -- ACHIEVEMENT DATA
-INSERT INTO tbl_achievement (name, description, image_url, xp_reward, streak_reward, go_reward, created_at, updated_at)
+INSERT INTO tbl_achievement (name, description, image_url, xp_reward_condition, streak_reward_condition, go_reward_condition, created_at, updated_at)
 VALUES
     -- 1
-    ('Hành trình của người mới bắt đầu', 'Bạn đã hoàn thành bài học đầu tiên của mình', '', 0, 1, 0, now(), null),
+    ('Hành trình của người mới bắt đầu', 'Bạn đã hoàn thành bài học đầu tiên của mình', '', 0, 0, 1, now(), null),
     -- 2
-    ('Quả cầu lửa', 'Bạn đã hoàn thành chuỗi 3 ngày', '', 0, 3, 0, now(), null),
+    ('Nhà vô địch go points', 'Kiếm 1000 điểm go points', '', 0, 0, 1000, now(), null),
     -- 3
-    ('Nhà vô địch go points', 'Kiếm 1500 điểm go points', '', 0, 0, 1500, now(), null),
+    ('Chuyên gia go points', 'Kiếm 2000 điểm go points', '', 0, 0, 2000, now(), null),
     -- 4
-    ('Pháo hoa', 'Hoàn thành chuỗi 7 ngày', '',0, 7, 0, now(), null),
+    ('Siêu nhân go points', 'Kiếm 3000 điểm go points', '', 0, 0, 3000, now(), null),
     -- 5
-    ('Sao chổi', 'Hoàn thành chuỗi 14 ngày', '',0, 14, 0, now(), null),
-    -- 6
-    ('Người thành đạt', 'Kiếm 5000 điểm chuối', '',0, 0, 5000, now(), null)
+    ('Người thành đạt', 'Kiếm 4000 điểm go points', '',0, 0, 4000, now(), null)
     ;
 
--- USER ACHIEVEMENT DATA
+-- USER_ACHIEVEMENT DATA
 INSERT INTO tbl_user_achievement (user_id, achievement_id)
 VALUES
-    (1, 1)
-    ;
+    (1, 1);
+
 
 -- LEVEL DATA
 INSERT INTO tbl_level (name, description, display_order, created_at, updated_at)

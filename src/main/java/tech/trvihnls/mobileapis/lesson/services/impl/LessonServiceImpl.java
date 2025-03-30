@@ -2,6 +2,8 @@ package tech.trvihnls.mobileapis.lesson.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tech.trvihnls.commons.domains.Achievement;
+import tech.trvihnls.commons.domains.AchievementRepository;
 import tech.trvihnls.commons.domains.User;
 import tech.trvihnls.commons.domains.UserLessonAttempt;
 import tech.trvihnls.commons.exceptions.AppException;
@@ -10,8 +12,13 @@ import tech.trvihnls.commons.repositories.UserLessonAttemptRepository;
 import tech.trvihnls.commons.repositories.UserRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.mobileapis.achievement.dtos.response.AchievementResponse;
 import tech.trvihnls.mobileapis.lesson.dtos.request.LessonSubmitRequest;
+import tech.trvihnls.mobileapis.lesson.dtos.response.LessonSubmitResponse;
 import tech.trvihnls.mobileapis.lesson.services.LessonService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Service implementation for handling lesson-related operations.
@@ -21,6 +28,7 @@ import tech.trvihnls.mobileapis.lesson.services.LessonService;
 public class LessonServiceImpl implements LessonService {
     private final UserLessonAttemptRepository userLessonAttemptRepository;
     private final UserRepository userRepository;
+    private final AchievementRepository achievementRepository;
 
 
     // TODO: draft
@@ -35,7 +43,7 @@ public class LessonServiceImpl implements LessonService {
      * @throws AppException              if the XP points are invalid
      */
     @Override
-    public Object submitLesson(long lessonId, LessonSubmitRequest request) {
+    public LessonSubmitResponse submitLesson(long lessonId, LessonSubmitRequest request) {
         Long uid = SecurityUtils.getCurrentUserId();
 
         assert uid != null;
@@ -69,8 +77,28 @@ public class LessonServiceImpl implements LessonService {
         // handle streak points (+1)
         user.setTotalStreakPoints(user.getTotalStreakPoints() + 1);
 
+
         userLessonAttemptRepository.save(userLessonAttempt);
-        userRepository.save(user);
-        return null;
+        User savedUser = userRepository.save(user);
+
+        // if achieve any achievement, handle here
+        List<Achievement> achievements = achievementRepository.findAll();
+        List<AchievementResponse> achievementResponses = new ArrayList<>();
+        for (Achievement a : achievements) {
+            if (savedUser.getTotalGoPoints() >= a.getGoRewardCondition() && !savedUser.getAchievements().contains(a)) {
+                AchievementResponse achievementResponse = AchievementResponse.builder()
+                        .name(a.getName())
+                        .description(a.getDescription())
+                        .imageUrl(a.getImageUrl())
+                        .build();
+                achievementResponses.add(achievementResponse);
+                savedUser.getAchievements().add(a);
+                userRepository.save(user);
+            }
+        }
+
+        return LessonSubmitResponse.builder()
+                .achievements(achievementResponses)
+                .build();
     }
 }

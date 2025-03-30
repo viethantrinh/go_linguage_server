@@ -15,17 +15,18 @@ import lombok.*;
 public class Achievement extends BaseEntity {
 
     private String name;
+
     private String description;
 
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "streak_reward")
-    private int streakReward;
+    @Column(name = "streak_reward_condition")
+    private int streakRewardCondition;
 
-    @Column(name = "xp_reward")
-    private int xpReward;
+    @Column(name = "xp_reward_condition")
+    private int xpRewardCondition;
 
-    @Column(name = "go_reward")
-    private int goReward;
+    @Column(name = "go_reward_condition")
+    private int goRewardCondition;
 }
