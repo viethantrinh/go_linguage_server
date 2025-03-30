@@ -525,14 +525,21 @@ public class MainServiceImpl implements MainService {
     @Override
     public List<ConversationResponse> retrieveConversationData() {
         List<Conversation> conversations = conversationRepository.findByOrderByDisplayOrderAsc();
+        boolean isUserSubscribed = userSubscriptionRepository
+                .existsByIsActiveAndPaymentStatusAndUserId(true, PaymentStatusEnum.SUCCEEDED.getValue(), SecurityUtils.getCurrentUserId());
 
         List<ConversationResponse> conversationResponses = new ArrayList<>();
         for (Conversation c : conversations) {
+
+            // Topics 1 and 2 are always free, others require subscription
+            boolean isPremium = c.getId() != 1 && c.getId() != 2 && !isUserSubscribed;
+
             ConversationResponse conversationResponse = ConversationResponse.builder()
                     .id(c.getId())
                     .name(c.getName())
                     .imageUrl(c.getImageUrl())
                     .displayOrder(c.getDisplayOrder())
+                    .isPremium(isPremium)
                     .build();
             conversationResponses.add(conversationResponse);
         }

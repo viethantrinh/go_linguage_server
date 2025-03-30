@@ -12,13 +12,14 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "name", "imageUrl", "displayOrder", "lines"})
+@JsonPropertyOrder({"id", "name", "imageUrl", "displayOrder", "isPremium", "lines"})
 
 public class ConversationResponse {
     private long id;
     private String name;
     private String imageUrl;
     private int displayOrder;
+    private boolean isPremium;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Builder.Default
