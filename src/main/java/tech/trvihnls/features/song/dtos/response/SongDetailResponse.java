@@ -9,13 +9,13 @@ import tech.trvihnls.commons.domains.WordTimestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "name", "audioUrl", "englishLyric", "vietnameseLyric", "wordTimeStamp", "displayOrder"})
+@JsonPropertyOrder({"id", "name", "audioUrl", "englishLyric", "vietnameseLyric", "displayOrder", "wordTimeStamp"})
 public class SongDetailResponse {
     private long id;
     private String name;
     private String audioUrl;
     private String englishLyric;
     private String vietnameseLyric;
-    private WordTimestamp wordTimestamp;
     private int displayOrder;
+    private WordTimestamp wordTimestamp;
 }

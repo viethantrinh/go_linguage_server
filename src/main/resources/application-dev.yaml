@@ -14,7 +14,7 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        '[show_sql]': false
+        '[show_sql]': true
         '[format_sql]': false
     defer-datasource-initialization: true
   sql:

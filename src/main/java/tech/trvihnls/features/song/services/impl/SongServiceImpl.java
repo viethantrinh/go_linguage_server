@@ -7,7 +7,6 @@ import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.SongRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
-import tech.trvihnls.features.song.dtos.response.SongResponse;
 import tech.trvihnls.features.song.services.SongService;
 
 import java.util.List;
@@ -35,12 +34,16 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public List<SongResponse> getAllSongs() {
+    public List<SongDetailResponse> getAllSongs() {
         return songRepository.findByOrderByDisplayOrderAsc().stream()
-                .map((s) -> SongResponse.builder()
+                .map((s) -> SongDetailResponse.builder()
                         .id(s.getId())
                         .name(s.getName())
+                        .audioUrl(s.getAudioUrl())
+                        .englishLyric(s.getEnglishLyric())
+                        .vietnameseLyric(s.getVietnameseLyric())
                         .displayOrder(s.getDisplayOrder())
+                        .wordTimestamp(s.getWordTimeStamp())
                         .build()
                 )
                 .toList();

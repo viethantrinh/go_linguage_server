@@ -10,7 +10,6 @@ import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
-import tech.trvihnls.features.song.dtos.response.SongResponse;
 import tech.trvihnls.features.song.services.SongService;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class SongController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SongResponse>>> listAllSongs() {
+    public ResponseEntity<ApiResponse<List<SongDetailResponse>>> listAllSongs() {
         var response = songService.getAllSongs();
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }}
