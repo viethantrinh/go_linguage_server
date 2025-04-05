@@ -5,17 +5,25 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import tech.trvihnls.commons.domains.Achievement;
+import tech.trvihnls.commons.domains.Role;
 import tech.trvihnls.commons.domains.User;
+import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.AchievementRepository;
+import tech.trvihnls.commons.repositories.RoleRepository;
 import tech.trvihnls.commons.repositories.UserRepository;
 import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.achievement.dtos.response.AchievementResponse;
+import tech.trvihnls.features.user.dtos.request.UserUpdateAdminRequest;
 import tech.trvihnls.features.user.dtos.request.UserUpdateRequest;
+import tech.trvihnls.features.user.dtos.response.RoleResponse;
+import tech.trvihnls.features.user.dtos.response.UserDetailResponse;
 import tech.trvihnls.features.user.dtos.response.UserInfoResponse;
+import tech.trvihnls.features.user.dtos.response.UserUpdateAdminResponse;
 import tech.trvihnls.features.user.services.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +32,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -96,5 +105,85 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
         userRepository.delete(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<UserDetailResponse> getAllUsersWithDetail() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(this::mapUserToUserDto).toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserUpdateAdminResponse updateUser(UserUpdateAdminRequest request) {
+        Optional<User> byId = userRepository.findById(request.getId());
+
+        if (byId.isEmpty()) {
+            throw new AppException(ErrorCodeEnum.USER_NOT_EXISTED);
+        }
+
+        User user = byId.get();
+
+        user.setName(request.getName());
+        user.setEnabled(request.isEnabled());
+        user.getRoles().clear();
+        Role role = roleRepository.findByName(request.getRole())
+                .orElseThrow(() -> new AppException(ErrorCodeEnum.ROLE_NOT_EXISTED));
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        User savedUser = userRepository.save(user);
+
+        return UserUpdateAdminResponse.builder()
+                .id(savedUser.getId())
+                .name(savedUser.getName())
+                .email(savedUser.getEmail())
+                .enabled(savedUser.isEnabled())
+                .roles(
+                        savedUser.getRoles().stream().map(
+                                r -> RoleResponse.builder()
+                                        .name(r.getName())
+                                        .description(r.getDescription())
+                                        .build()
+                        ).toList())
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserDetailResponse getUserInformationById(Long id) {
+        Optional<User> byId = userRepository.findById(id);
+
+        if (byId.isEmpty()) {
+            throw new AppException(ErrorCodeEnum.USER_NOT_EXISTED);
+        }
+        User user = byId.get();
+
+        return mapUserToUserDto(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    protected UserDetailResponse mapUserToUserDto(User user) {
+        return UserDetailResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .enabled(user.isEnabled())
+                .roles(
+                        user.getRoles().stream().map(
+                                r -> RoleResponse.builder()
+                                        .name(r.getName())
+                                        .description(r.getDescription())
+                                        .build()
+                        ).toList()
+                )
+                .build();
     }
 }

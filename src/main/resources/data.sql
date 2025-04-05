@@ -17,8 +17,8 @@ VALUES ('USER', 'User can only access to the learning material', now(), null);
 -- USER_ROLE DATA
 INSERT INTO tbl_user_role (user_id, role_id)
 VALUES
-    (1, 2), -- han is user
-    (2, 1); -- hang is admin
+    (1, 1), -- han is admin
+    (2, 2); -- hang is admin
 
 
 -- SUBSCRIPTION DATA
