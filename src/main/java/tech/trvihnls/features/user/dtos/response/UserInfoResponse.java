@@ -17,8 +17,14 @@ public class UserInfoResponse {
     private Long id;
     private String name;
     private String email;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int totalXPPoints;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int totalGoPoints;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Builder.Default
     private List<AchievementResponse> achievements = new ArrayList<>();
 }
