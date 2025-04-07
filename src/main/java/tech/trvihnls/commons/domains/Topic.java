@@ -14,21 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_topic")
 public class Topic extends BaseEntity {
-    @Column(name = "name", length = 64, nullable = false)
-    private String name;
-
-    @Column(name = "description", length = 256, nullable = true)
-    private String description;
-
-    @Column(name = "image_url", length = 256, nullable = true)
-    private String imageUrl;
-
-    @Column(name = "display_order", nullable = false)
-    private int displayOrder;
-
-    @Column(name = "is_premium", nullable = false)
-    private boolean isPremium; // is this topic premium or not
-
     @ManyToOne
     @JoinColumn(name = "level_id")
     private Level level;
@@ -54,4 +39,19 @@ public class Topic extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "sentence_id")
     )
     private List<Sentence> sentences = new ArrayList<>();
+
+    @Column(name = "name", length = 64, nullable = false)
+    private String name;
+
+    @Column(name = "description", length = 256, nullable = true)
+    private String description;
+
+    @Column(name = "image_url", length = 256, nullable = true)
+    private String imageUrl;
+
+    @Column(name = "display_order", nullable = false)
+    private int displayOrder;
+
+    @Column(name = "is_premium", nullable = false)
+    private boolean isPremium; // is this topic premium or not
 }

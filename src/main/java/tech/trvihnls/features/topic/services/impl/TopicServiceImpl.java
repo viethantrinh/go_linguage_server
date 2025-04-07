@@ -19,8 +19,9 @@ import tech.trvihnls.commons.utils.enums.SpeakerEnum;
 import tech.trvihnls.features.excercise.dtos.response.*;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
 import tech.trvihnls.features.media.services.MediaUploadService;
+import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminLessonRequest;
 import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminRequest;
-import tech.trvihnls.features.topic.dtos.request.TopicLessonRequest;
+import tech.trvihnls.features.topic.dtos.request.TopicUpdateAdminLessonRequest;
 import tech.trvihnls.features.topic.dtos.request.TopicUpdateAdminRequest;
 import tech.trvihnls.features.topic.dtos.response.*;
 import tech.trvihnls.features.topic.mapper.TopicMapper;
@@ -129,7 +130,7 @@ public class TopicServiceImpl implements TopicService {
         topicBuilder.displayOrder(calculateTopicDisplayOrderByLevel(request.getLevelTypeId())); // recalculate the display order based on topic list by level
         Topic topic = topicBuilder.build();
         Topic savedTopic = topicRepository.save(topic);
-        for (TopicLessonRequest l : request.getLessons()) {
+        for (TopicCreateAdminLessonRequest l : request.getLessons()) {
             Lesson lesson = new Lesson();
             lesson.setName(l.getName());
             lesson.setDisplayOrder(l.getDisplayOrder());
@@ -178,13 +179,105 @@ public class TopicServiceImpl implements TopicService {
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public TopicDetailAdminResponse getTopicDetail(Long topicId) {
-        return null;
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
+
+
+        TopicDetailAdminResponse.TopicDetailAdminResponseBuilder builder = TopicDetailAdminResponse.builder();
+        builder.id(topic.getId());
+        builder.levelId(topic.getLevel().getId());
+        builder.name(topic.getName());
+        builder.imageUrl(topic.getImageUrl());
+        builder.displayOrder(topic.getDisplayOrder());
+        builder.isPremium(topic.isPremium());
+
+        // build list of lessons
+        var lessons = topic.getLessons().stream()
+                .map((l) -> TopicDetailAdminLessonResponse.builder()
+                        .id(l.getId())
+                        .lessonTypeId(l.getLessonType().getId())
+                        .name(l.getName())
+                        .displayOrder(l.getDisplayOrder())
+                        .build())
+                .sorted(Comparator.comparingInt(TopicDetailAdminLessonResponse::getDisplayOrder))
+                .toList();
+        builder.lessons(lessons);
+
+        return builder.build();
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public TopicUpdateAdminResponse updateTopic(TopicUpdateAdminRequest request) {
-        return null;
+        Long topicId = request.getId();
+        Topic topicToUpdate = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
+        topicToUpdate.setLevel(new Level(request.getLevelTypeId()));
+        topicToUpdate.setName(request.getName());
+        topicToUpdate.setPremium(request.isPremium());
+
+        List<Lesson> existingLessons = topicToUpdate.getLessons();
+        Map<Long, Lesson> existingLessonsMap = existingLessons.stream()
+                .collect(Collectors.toMap(Lesson::getId, lesson -> lesson));
+
+        // Update or add lessons from the request
+        List<Lesson> updatedLessons = new ArrayList<>();
+        for (TopicUpdateAdminLessonRequest lessonRequest : request.getLessons()) {
+            Lesson lesson = existingLessonsMap.get(lessonRequest.getId());
+            if (lesson != null) {
+                // Update existing lesson
+                lesson.setLessonType(new LessonType(lessonRequest.getLessonTypeId()));
+                lesson.setName(lessonRequest.getName());
+                lesson.setDisplayOrder(lessonRequest.getDisplayOrder());
+                updatedLessons.add(lesson);
+            } else {
+                // Add new lesson
+                Lesson newLesson = Lesson.builder()
+                        .lessonType(new LessonType(lessonRequest.getLessonTypeId()))
+                        .name(lessonRequest.getName())
+                        .displayOrder(lessonRequest.getDisplayOrder())
+                        .topic(topicToUpdate)
+                        .build();
+                Lesson savedNewLesson = lessonRepository.save(newLesson);
+                updatedLessons.add(savedNewLesson);
+            }
+        }
+
+        // tìm những lessons đã tồn tại nhưng không có mặt trong danh sách id để update
+        // Extract the IDs of the lessons from the update request
+        Set<Long> lessonIdsToUpdate = request.getLessons().stream()
+                .map(TopicUpdateAdminLessonRequest::getId)
+                .collect(Collectors.toSet());
+
+        // Find existing lessons that are not in the list of IDs to update
+        List<Lesson> orphanLessons = existingLessons.stream()
+                .filter(lesson -> !lessonIdsToUpdate.contains(lesson.getId()))
+                .toList();
+
+
+        // Delete exercise relationships before deleting exercises
+        for (Lesson lesson : orphanLessons) {
+            List<Exercise> exercises = exerciseRepository.findByLessonId(lesson.getId());
+            for (Exercise exercise : exercises) {
+                deleteExerciseRelationships(exercise);
+            }
+        }
+
+        for (Lesson lesson : orphanLessons) {
+            userLessonAttemptRepository.deleteAllByLessonId(lesson.getId());
+        }
+
+        for (Lesson lesson : orphanLessons) {
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_lesson WHERE tbl_lesson.id = :lessonId")
+                    .setParameter("lessonId", lesson.getId())
+                    .executeUpdate();
+        }
+
+        topicToUpdate.setLessons(updatedLessons);
+        Topic savedTopic = topicRepository.save(topicToUpdate);
+        return topicMapper.toTopicUpdateAdminResponse(savedTopic);
     }
 
     private void deleteExerciseRelationships(Exercise exercise) {

@@ -9,9 +9,8 @@ import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
 import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminRequest;
-import tech.trvihnls.features.topic.dtos.response.TopicAdminResponse;
-import tech.trvihnls.features.topic.dtos.response.TopicCreateAdminResponse;
-import tech.trvihnls.features.topic.dtos.response.TopicImageResponse;
+import tech.trvihnls.features.topic.dtos.request.TopicUpdateAdminRequest;
+import tech.trvihnls.features.topic.dtos.response.*;
 import tech.trvihnls.features.topic.services.TopicService;
 
 import java.util.List;
@@ -56,5 +55,20 @@ public class TopicController {
     ) {
         var response = topicService.createOrUpdateImage(file, topicId);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @GetMapping("/admin/{id}/detail")
+    public ResponseEntity<ApiResponse<TopicDetailAdminResponse>> getTopicDetailByAdmin(
+            @PathVariable Long id) {
+        var topics = topicService.getTopicDetail(id);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, topics);
+    }
+
+    @PutMapping("/admin/update")
+    public ResponseEntity<ApiResponse<TopicUpdateAdminResponse>> updateTopicDetailByAdmin(
+            @RequestBody TopicUpdateAdminRequest request
+    ) {
+        var topics = topicService.updateTopic(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, topics);
     }
 }

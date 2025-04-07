@@ -14,12 +14,6 @@ import java.util.List;
 @Entity
 @Table(name = "tbl_lesson")
 public class Lesson extends BaseEntity {
-    @Column(name = "name", length = 64, nullable = false)
-    private String name;
-
-    @Column(name = "display_order", nullable = false)
-    private int displayOrder;
-
     @Builder.Default
     @OneToMany(mappedBy = "lesson")
     private List<UserLessonAttempt> userLessonAttempts = new ArrayList<>(); // list of user lesson attempts for this lesson
@@ -35,4 +29,10 @@ public class Lesson extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "lesson")
     private List<Exercise> exercises = new ArrayList<>();
+
+    @Column(name = "name", length = 64, nullable = false)
+    private String name;
+
+    @Column(name = "display_order", nullable = false)
+    private int displayOrder;
 }

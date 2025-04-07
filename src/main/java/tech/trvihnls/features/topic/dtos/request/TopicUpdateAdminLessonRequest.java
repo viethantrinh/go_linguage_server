@@ -7,8 +7,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopicLessonRequest {
+public class TopicUpdateAdminLessonRequest {
+    private long id;
+    private long lessonTypeId;
     private String name;
     private int displayOrder;
-    private long lessonTypeId;
 }

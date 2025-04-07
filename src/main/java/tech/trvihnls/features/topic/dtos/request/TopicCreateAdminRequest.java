@@ -15,7 +15,7 @@ public class TopicCreateAdminRequest {
     private String name;
 
     @Builder.Default
-    private List<TopicLessonRequest> lessons = new ArrayList<>();
+    private List<TopicCreateAdminLessonRequest> lessons = new ArrayList<>();
 
     @JsonProperty("isPremium")
     private boolean isPremium;

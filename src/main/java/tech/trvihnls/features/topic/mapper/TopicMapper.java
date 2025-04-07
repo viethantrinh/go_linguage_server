@@ -8,6 +8,7 @@ import tech.trvihnls.commons.domains.Topic;
 import tech.trvihnls.features.topic.dtos.response.TopicAdminResponse;
 import tech.trvihnls.features.topic.dtos.response.TopicCreateAdminResponse;
 import tech.trvihnls.features.topic.dtos.response.TopicImageResponse;
+import tech.trvihnls.features.topic.dtos.response.TopicUpdateAdminResponse;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TopicMapper {
@@ -19,4 +20,7 @@ public interface TopicMapper {
 
     @Mapping(target = "isPremium", source = "premium")
     TopicImageResponse toTopicImageResponse(Topic topic);
+
+    @Mapping(target = "isPremium", source = "premium")
+    TopicUpdateAdminResponse toTopicUpdateAdminResponse(Topic topic);
 }
