@@ -1,7 +1,9 @@
 package tech.trvihnls.features.topic.services.impl;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tech.trvihnls.commons.domains.*;
 import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
@@ -14,6 +16,8 @@ import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.commons.utils.enums.SpeakerEnum;
 import tech.trvihnls.features.excercise.dtos.response.*;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
+import tech.trvihnls.features.topic.dtos.response.TopicAdminResponse;
+import tech.trvihnls.features.topic.mapper.TopicMapper;
 import tech.trvihnls.features.topic.services.TopicService;
 
 import java.util.*;
@@ -29,6 +33,8 @@ public class TopicServiceImpl implements TopicService {
     private final LessonRepository lessonRepository;
     private final UserLessonAttemptRepository userLessonAttemptRepository;
     private final ExerciseRepository exerciseRepository;
+    private final TopicMapper topicMapper;
+    private final EntityManager entityManager;
 
     /**
      * Returns detailed lesson information with all associated exercises for a given topic.
@@ -49,6 +55,106 @@ public class TopicServiceImpl implements TopicService {
 
         // Build and return the detailed lesson responses
         return buildLessonDetailResponses(lessons, lessonXpPointsMap, topicId);
+    }
+
+    @Override
+    public List<TopicAdminResponse> getAllTopics() {
+        List<Topic> topics = topicRepository.findAll();
+        return topics.stream().map(topicMapper::toTopicResponse).toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        // Check if topic exists
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
+
+        // Clear many-to-many relationships with words and sentences
+        topic.getWords().clear();
+        topic.getSentences().clear();
+        topicRepository.save(topic);
+
+        // Get all lessons for this topic
+        List<Lesson> lessons = lessonRepository.findByTopicIdOrderByDisplayOrderAsc(id);
+
+        // Delete exercise relationships before deleting exercises
+        for (Lesson lesson : lessons) {
+            List<Exercise> exercises = exerciseRepository.findByLessonId(lesson.getId());
+            for (Exercise exercise : exercises) {
+                deleteExerciseRelationships(exercise);
+            }
+        }
+
+        // Now delete the topic - this will cascade to lessons and exercises
+        topicRepository.deleteById(id);
+    }
+
+    private void deleteExerciseRelationships(Exercise exercise) {
+        // For vocabulary exercises: need to delete (not nullify) due to composite key
+        if (exercise.getVocabularyExercise() != null) {
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_vocabulary_exercise WHERE exercise_id = :exerciseId")
+                    .setParameter("exerciseId", exercise.getId())
+                    .executeUpdate();
+        }
+
+        // For multiple choice exercises
+        if (exercise.getMultipleChoiceExercise() != null) {
+            Long mceId = exercise.getMultipleChoiceExercise().getId();
+
+            // Delete options first
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_multiple_choice_option WHERE multiple_choice_exercise_id = :mceId")
+                    .setParameter("mceId", mceId)
+                    .executeUpdate();
+
+            // Then delete the exercise itself
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_multiple_choice_exercise WHERE id = :mceId")
+                    .setParameter("mceId", mceId)
+                    .executeUpdate();
+        }
+
+        // For word arrangement exercises
+        if (exercise.getWordArrangementExercise() != null) {
+            Long waeId = exercise.getWordArrangementExercise().getId();
+
+            // Delete options first
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_word_arrangement_option WHERE word_arrangement_exercise_id = :waeId")
+                    .setParameter("waeId", waeId)
+                    .executeUpdate();
+
+            // Then delete the exercise
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_word_arrangement_exercise WHERE id = :waeId")
+                    .setParameter("waeId", waeId)
+                    .executeUpdate();
+        }
+
+        // For matching exercises
+        if (exercise.getMatchingExercise() != null) {
+            Long meId = exercise.getMatchingExercise().getId();
+
+            // Delete matching pairs first
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_matching_pair WHERE matching_exercise_id = :meId")
+                    .setParameter("meId", meId)
+                    .executeUpdate();
+
+            // Then delete the exercise
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_matching_exercise WHERE id = :meId")
+                    .setParameter("meId", meId)
+                    .executeUpdate();
+        }
+
+        // Delete the base exercise
+        entityManager.createNativeQuery(
+                        "DELETE FROM tbl_exercise WHERE id = :exerciseId")
+                .setParameter("exerciseId", exercise.getId())
+                .executeUpdate();
     }
 
     /**

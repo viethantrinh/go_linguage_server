@@ -12,4 +12,6 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     @Query("select t from Topic t where t.level.id = ?1 order by t.displayOrder")
     List<Topic> findByLevelIdOrderByDisplayOrderAsc(Long id);
 
+    @Query("select t from Topic t order by t.displayOrder")
+    List<Topic> findByOrderByDisplayOrderAsc();
 }

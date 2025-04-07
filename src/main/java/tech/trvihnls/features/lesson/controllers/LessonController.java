@@ -19,7 +19,7 @@ public class LessonController {
 
     private final LessonService lessonService;
 
-    @PutMapping("/{id}/submit")
+    @PostMapping("/{id}/submit")
     public ResponseEntity<ApiResponse<Object>> submitLessonResult(@PathVariable("id") String id,
                                                                   @RequestBody @Valid LessonSubmitRequest request) {
         Object o = lessonService.submitLesson(Long.parseLong(id), request);

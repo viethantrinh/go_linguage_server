@@ -36,5 +36,6 @@ public class ConversationLine extends BaseEntity {
     private Conversation conversation;
 
     @OneToMany(mappedBy = "conversationLine")
+    @Builder.Default
     private List<ConversationUserOption> conversationUserOptions = new ArrayList<>();
 }
