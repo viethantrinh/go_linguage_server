@@ -28,6 +28,13 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
+    public BaseEntity() {
+    }
+
+    public BaseEntity(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

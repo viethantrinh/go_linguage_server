@@ -2,8 +2,10 @@ package tech.trvihnls.features.topic.services.impl;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.domains.*;
 import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
@@ -16,7 +18,11 @@ import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.commons.utils.enums.SpeakerEnum;
 import tech.trvihnls.features.excercise.dtos.response.*;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
-import tech.trvihnls.features.topic.dtos.response.TopicAdminResponse;
+import tech.trvihnls.features.media.services.MediaUploadService;
+import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminRequest;
+import tech.trvihnls.features.topic.dtos.request.TopicLessonRequest;
+import tech.trvihnls.features.topic.dtos.request.TopicUpdateAdminRequest;
+import tech.trvihnls.features.topic.dtos.response.*;
 import tech.trvihnls.features.topic.mapper.TopicMapper;
 import tech.trvihnls.features.topic.services.TopicService;
 
@@ -35,6 +41,7 @@ public class TopicServiceImpl implements TopicService {
     private final ExerciseRepository exerciseRepository;
     private final TopicMapper topicMapper;
     private final EntityManager entityManager;
+    private final MediaUploadService mediaUploadService;
 
     /**
      * Returns detailed lesson information with all associated exercises for a given topic.
@@ -58,6 +65,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<TopicAdminResponse> getAllTopics() {
         List<Topic> topics = topicRepository.findAll();
         return topics.stream().map(topicMapper::toTopicResponse).toList();
@@ -65,6 +73,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Long id) {
         // Check if topic exists
         Topic topic = topicRepository.findById(id)
@@ -108,6 +117,74 @@ public class TopicServiceImpl implements TopicService {
                         "DELETE FROM tbl_topic WHERE tbl_topic.id = :topicId")
                 .setParameter("topicId", topic.getId())
                 .executeUpdate();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public TopicCreateAdminResponse createTopic(TopicCreateAdminRequest request) {
+        Topic.TopicBuilder topicBuilder = Topic.builder();
+        topicBuilder.name(request.getName());
+        topicBuilder.isPremium(request.isPremium());
+        topicBuilder.level(new Level(request.getLevelTypeId()));
+        topicBuilder.displayOrder(calculateTopicDisplayOrderByLevel(request.getLevelTypeId())); // recalculate the display order based on topic list by level
+        Topic topic = topicBuilder.build();
+        Topic savedTopic = topicRepository.save(topic);
+        for (TopicLessonRequest l : request.getLessons()) {
+            Lesson lesson = new Lesson();
+            lesson.setName(l.getName());
+            lesson.setDisplayOrder(l.getDisplayOrder());
+            lesson.setLessonType(new LessonType(l.getLessonTypeId()));
+            lesson.setTopic(savedTopic);
+            lessonRepository.save(lesson);
+        }
+
+        return topicMapper.toTopicCreateAdminResponse(savedTopic);
+    }
+
+    private int calculateTopicDisplayOrderByLevel(long levelTypeId) {
+        List<Topic> topics = topicRepository.findByLevelIdOrderByDisplayOrderAsc(levelTypeId);
+
+        int maximumOrder = topics.stream()
+                .mapToInt(Topic::getDisplayOrder)
+                .max()
+                .orElse(0);
+
+        return maximumOrder + 1;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public TopicImageResponse createOrUpdateImage(MultipartFile file, Long topicId) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
+
+        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud
+        // create new image and get back link
+//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(file);
+//        String imageUrl = cloudinaryUrlResponse.getSecureUrl();
+
+        String imageUrl = "SAMPLE";
+
+        // set to topic
+        topic.setImageUrl(imageUrl);
+
+
+        // save or update
+        Topic savedTopic = topicRepository.save(topic);
+
+        return topicMapper.toTopicImageResponse(savedTopic);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public TopicDetailAdminResponse getTopicDetail(Long topicId) {
+        return null;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public TopicUpdateAdminResponse updateTopic(TopicUpdateAdminRequest request) {
+        return null;
     }
 
     private void deleteExerciseRelationships(Exercise exercise) {

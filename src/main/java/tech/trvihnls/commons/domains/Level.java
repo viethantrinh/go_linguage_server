@@ -30,4 +30,8 @@ public class Level extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "level")
     private List<Topic> topics = new ArrayList<>(); // list of topics in this level
+
+    public Level(Long id) {
+        super(id);
+    }
 }

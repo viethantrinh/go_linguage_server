@@ -19,4 +19,8 @@ public class LessonType extends BaseEntity {
 
     @Column(name = "description", length = 256)
     private String description;
+
+    public LessonType(Long id) {
+        super(id);
+    }
 }

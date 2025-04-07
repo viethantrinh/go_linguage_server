@@ -20,7 +20,7 @@ public class Topic extends BaseEntity {
     @Column(name = "description", length = 256, nullable = true)
     private String description;
 
-    @Column(name = "image_url", length = 256, nullable = false)
+    @Column(name = "image_url", length = 256, nullable = true)
     private String imageUrl;
 
     @Column(name = "display_order", nullable = false)

@@ -3,11 +3,15 @@ package tech.trvihnls.features.topic.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
+import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminRequest;
 import tech.trvihnls.features.topic.dtos.response.TopicAdminResponse;
+import tech.trvihnls.features.topic.dtos.response.TopicCreateAdminResponse;
+import tech.trvihnls.features.topic.dtos.response.TopicImageResponse;
 import tech.trvihnls.features.topic.services.TopicService;
 
 import java.util.List;
@@ -35,5 +39,22 @@ public class TopicController {
     public ResponseEntity<ApiResponse<Void>> deleteTopicForAdmin(@PathVariable("id") Long id) {
         topicService.deleteById(id);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @PostMapping("/admin/create")
+    public ResponseEntity<ApiResponse<TopicCreateAdminResponse>> createTopicByAdmin(
+            @RequestBody TopicCreateAdminRequest request
+    ) {
+        var response = topicService.createTopic(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/admin/upload-image")
+    public ResponseEntity<ApiResponse<TopicImageResponse>> uploadImageForTopicByAdmin(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("topicId") Long topicId
+    ) {
+        var response = topicService.createOrUpdateImage(file, topicId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }
