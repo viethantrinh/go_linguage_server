@@ -34,7 +34,7 @@ public class Topic extends BaseEntity {
     private Level level;
 
     @Builder.Default
-    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "topic")
     private List<Lesson> lessons = new ArrayList<>(); // list of lessons in this topic
 
     @Builder.Default

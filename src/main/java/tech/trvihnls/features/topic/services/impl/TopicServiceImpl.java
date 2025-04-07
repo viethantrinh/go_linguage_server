@@ -70,10 +70,16 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = topicRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
 
-        // Clear many-to-many relationships with words and sentences
-        topic.getWords().clear();
-        topic.getSentences().clear();
-        topicRepository.save(topic);
+        // Clear many-to-many relationships with words and sentences via direct SQL
+        entityManager.createNativeQuery(
+                        "DELETE FROM tbl_topic_word WHERE topic_id = :topicId")
+                .setParameter("topicId", id)
+                .executeUpdate();
+
+        entityManager.createNativeQuery(
+                        "DELETE FROM tbl_topic_sentence WHERE topic_id = :topicId")
+                .setParameter("topicId", id)
+                .executeUpdate();
 
         // Get all lessons for this topic
         List<Lesson> lessons = lessonRepository.findByTopicIdOrderByDisplayOrderAsc(id);
@@ -86,8 +92,22 @@ public class TopicServiceImpl implements TopicService {
             }
         }
 
-        // Now delete the topic - this will cascade to lessons and exercises
-        topicRepository.deleteById(id);
+        for (Lesson lesson : lessons) {
+            userLessonAttemptRepository.deleteAllByLessonId(lesson.getId());
+        }
+
+        for (Lesson lesson : lessons) {
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_lesson WHERE tbl_lesson.id = :lessonId")
+                    .setParameter("lessonId", lesson.getId())
+                    .executeUpdate();
+        }
+
+
+        entityManager.createNativeQuery(
+                        "DELETE FROM tbl_topic WHERE tbl_topic.id = :topicId")
+                .setParameter("topicId", topic.getId())
+                .executeUpdate();
     }
 
     private void deleteExerciseRelationships(Exercise exercise) {
@@ -96,6 +116,23 @@ public class TopicServiceImpl implements TopicService {
             entityManager.createNativeQuery(
                             "DELETE FROM tbl_vocabulary_exercise WHERE exercise_id = :exerciseId")
                     .setParameter("exerciseId", exercise.getId())
+                    .executeUpdate();
+        }
+
+        // For dialogue exercises
+        if (exercise.getDialogueExercise() != null) {
+            Long deId = exercise.getDialogueExercise().getId();
+
+            // Delete dialogue exercise lines first
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_dialogue_exercise_line WHERE dialogue_exercise_id = :deId")
+                    .setParameter("deId", deId)
+                    .executeUpdate();
+
+            // Then delete the dialogue exercise itself
+            entityManager.createNativeQuery(
+                            "DELETE FROM tbl_dialogue_exercise WHERE id = :deId")
+                    .setParameter("deId", deId)
                     .executeUpdate();
         }
 
