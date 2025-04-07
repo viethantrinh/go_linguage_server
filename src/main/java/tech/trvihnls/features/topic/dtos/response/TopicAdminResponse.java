@@ -1,5 +1,6 @@
 package tech.trvihnls.features.topic.dtos.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class TopicAdminResponse {
     private String name;
     private String imageUrl;
     private int displayOrder;
+    @JsonProperty("isPremium")
     private boolean isPremium;
     private LocalDateTime createdAt;
 }
