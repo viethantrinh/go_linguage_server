@@ -213,8 +213,9 @@ public class TopicServiceImpl implements TopicService {
         Long topicId = request.getId();
         Topic topicToUpdate = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
-        topicToUpdate.setLevel(new Level(request.getLevelTypeId()));
+
         topicToUpdate.setName(request.getName());
+        topicToUpdate.setLevel(new Level(request.getLevelTypeId()));
         topicToUpdate.setPremium(request.isPremium());
 
         List<Lesson> existingLessons = topicToUpdate.getLessons();
@@ -227,15 +228,15 @@ public class TopicServiceImpl implements TopicService {
             Lesson lesson = existingLessonsMap.get(lessonRequest.getId());
             if (lesson != null) {
                 // Update existing lesson
-                lesson.setLessonType(new LessonType(lessonRequest.getLessonTypeId()));
                 lesson.setName(lessonRequest.getName());
+                lesson.setLessonType(new LessonType(lessonRequest.getLessonTypeId()));
                 lesson.setDisplayOrder(lessonRequest.getDisplayOrder());
                 updatedLessons.add(lesson);
             } else {
                 // Add new lesson
                 Lesson newLesson = Lesson.builder()
-                        .lessonType(new LessonType(lessonRequest.getLessonTypeId()))
                         .name(lessonRequest.getName())
+                        .lessonType(new LessonType(lessonRequest.getLessonTypeId()))
                         .displayOrder(lessonRequest.getDisplayOrder())
                         .topic(topicToUpdate)
                         .build();

@@ -18,4 +18,8 @@ public class ExerciseType extends BaseEntity {
 
     @Column(name = "description", length = 256)
     private String description;
+
+    public ExerciseType(Long id) {
+        super(id);
+    }
 }

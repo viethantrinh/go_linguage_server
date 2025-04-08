@@ -88,7 +88,7 @@ VALUES -- 1, 2, 3, 4
 -- LESSON_TYPE DATA
 INSERT INTO tbl_lesson_type (name, description, created_at, updated_at)
 VALUES -- 1, 2, 3
-    ('Bài học chung', 'Bài học chung kết hợp các bài tập để học từ vựng', now(), null),
+    ('Bài học chính', 'Bài học chung kết hợp các bài tập để học từ vựng', now(), null),
     ('Bài học nói', 'Bài học nói cho luyện nói các từ vựng và câu thuộc phạm vi của bài học', now(), null),
     ('Bài học kiểm tra', 'Bài học kiểm tra tổng hợp các bài tập từ các bài học chung', now(), null)
     ;

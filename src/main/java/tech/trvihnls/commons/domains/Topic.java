@@ -54,4 +54,9 @@ public class Topic extends BaseEntity {
 
     @Column(name = "is_premium", nullable = false)
     private boolean isPremium; // is this topic premium or not
+
+
+    public Topic(Long id) {
+        super(id);
+    }
 }
