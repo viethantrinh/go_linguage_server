@@ -54,8 +54,13 @@ public class LessonServiceImpl implements LessonService {
         User user = userRepository.findById(uid)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.USER_NOT_EXISTED));
 
-        UserLessonAttempt userLessonAttempt = userLessonAttemptRepository.findByUserIdAndLessonId(uid, lessonId)
+        // Find the lesson to ensure it exists
+        Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Find the user's attempt or create a new one if it doesn't exist
+        UserLessonAttempt userLessonAttempt = userLessonAttemptRepository.findByUserIdAndLessonId(uid, lessonId)
+                .orElse(createNewUserLessonAttempt(user, lesson));
 
         // handle xp points earned (update)
         int newXpPoints = request.getXpPoints();
@@ -81,7 +86,6 @@ public class LessonServiceImpl implements LessonService {
         // handle streak points (+1)
         user.setTotalStreakPoints(user.getTotalStreakPoints() + 1);
 
-
         userLessonAttemptRepository.save(userLessonAttempt);
         User savedUser = userRepository.save(user);
 
@@ -104,6 +108,22 @@ public class LessonServiceImpl implements LessonService {
         return LessonSubmitResponse.builder()
                 .achievements(achievementResponses)
                 .build();
+    }
+
+    /**
+     * Creates a new UserLessonAttempt for the given user and lesson
+     */
+    private UserLessonAttempt createNewUserLessonAttempt(User user, Lesson lesson) {
+        UserLessonAttemptId id = new UserLessonAttemptId(user.getId(), lesson.getId());
+
+        UserLessonAttempt newAttempt = new UserLessonAttempt();
+        newAttempt.setId(id);
+        newAttempt.setUser(user);
+        newAttempt.setLesson(lesson);
+        newAttempt.setXpPointsEarned(0);
+        newAttempt.setGoPointsEarned(0);
+
+        return userLessonAttemptRepository.save(newAttempt);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
