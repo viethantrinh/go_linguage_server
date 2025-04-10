@@ -27,11 +27,13 @@ public class VocabularyExercise {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
+    @MapsId("exerciseId")
     @OneToOne
-    @JoinColumn(name = "exercise_id", insertable = false, updatable = false)
+    @JoinColumn(name = "exercise_id", insertable = false, updatable = false, unique = true)
     private Exercise exercise;
 
+    @MapsId("wordId")
     @OneToOne
-    @JoinColumn(name = "word_id", insertable = false, updatable = false)
+    @JoinColumn(name = "word_id", insertable = false, updatable = false, unique = true)
     private Word word;
 }

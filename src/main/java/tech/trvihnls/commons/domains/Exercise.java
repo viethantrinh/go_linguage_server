@@ -26,7 +26,7 @@ public class Exercise extends BaseEntity {
     @JoinColumn(name = "exercise_type_id")
     private ExerciseType exerciseType;
 
-    @OneToOne(mappedBy = "exercise")
+    @OneToOne(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
     private VocabularyExercise vocabularyExercise;
 
     @OneToOne(mappedBy = "exercise")
@@ -40,4 +40,8 @@ public class Exercise extends BaseEntity {
 
     @OneToOne(mappedBy = "exercise")
     private DialogueExercise dialogueExercise;
+
+    public Exercise(Long id) {
+        super(id);
+    }
 }

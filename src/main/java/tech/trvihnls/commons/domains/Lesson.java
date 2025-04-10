@@ -35,4 +35,8 @@ public class Lesson extends BaseEntity {
 
     @Column(name = "display_order", nullable = false)
     private int displayOrder;
+
+    public Lesson(Long id) {
+        super(id);
+    }
 }

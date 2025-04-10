@@ -38,4 +38,8 @@ public class Word extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "sentence_id")
     )
     private List<Sentence> sentences = new ArrayList<>();
+
+    public Word(Long id) {
+        super(id);
+    }
 }
