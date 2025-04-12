@@ -1,4 +1,4 @@
-package tech.trvihnls.features.word.dtos.query;
+package tech.trvihnls.features.material.dtos.query;
 
 import jakarta.persistence.Column;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WordQuery {
+public class SentenceQuery {
     @Column(name = "id")
     private Long id;
 
@@ -20,7 +20,4 @@ public class WordQuery {
 
     @Column(name = "audio_url", nullable = false)
     private String audioUrl;
-
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
 }

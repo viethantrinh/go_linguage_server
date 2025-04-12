@@ -1,4 +1,4 @@
-package tech.trvihnls.features.word.dtos.response.admin;
+package tech.trvihnls.features.material.dtos.response.admin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WordForVocabularyExerciseResponse {
+public class WordForMultipleChoiceExerciseResponse {
     private long wordId;
     private String englishText;
     private String vietnameseText;

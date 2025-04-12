@@ -1,4 +1,4 @@
-package tech.trvihnls.features.word.controllers;
+package tech.trvihnls.features.material.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
-import tech.trvihnls.features.word.dtos.response.admin.WordForVocabularyExerciseResponse;
-import tech.trvihnls.features.word.services.WordService;
+import tech.trvihnls.features.material.dtos.response.admin.WordForMultipleChoiceExerciseResponse;
+import tech.trvihnls.features.material.dtos.response.admin.WordForVocabularyExerciseResponse;
+import tech.trvihnls.features.material.services.WordService;
 
 import java.util.List;
 
@@ -24,6 +25,12 @@ public class WordController {
     @GetMapping("/by-vocabulary-exercise/{exerciseId}")
     public ResponseEntity<ApiResponse<List<WordForVocabularyExerciseResponse>>> getWordsByVocabularyExerciseId(@PathVariable Long exerciseId) {
         List<WordForVocabularyExerciseResponse> words = wordService.getWordsByVocabularyExerciseId(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, words);
+    }
+
+    @GetMapping("/by-multiple-choice-exercise/{exerciseId}")
+    public ResponseEntity<ApiResponse<List<WordForMultipleChoiceExerciseResponse>>> getWordsByMultipleChoiceExerciseId(@PathVariable Long exerciseId) {
+        List<WordForMultipleChoiceExerciseResponse> words = wordService.getWordsByMultipleChoiceExerciseId(exerciseId);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, words);
     }
 }

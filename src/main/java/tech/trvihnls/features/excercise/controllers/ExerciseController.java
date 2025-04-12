@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
+import tech.trvihnls.features.excercise.dtos.request.admin.MultipleChoiceExerciseCreateRequest;
+import tech.trvihnls.features.excercise.dtos.request.admin.MultipleChoiceExerciseUpdateRequest;
 import tech.trvihnls.features.excercise.dtos.request.admin.VocabularyExerciseCreateRequest;
 import tech.trvihnls.features.excercise.dtos.request.admin.VocabularyExerciseUpdateRequest;
+import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
 import tech.trvihnls.features.excercise.services.ExerciseService;
 
@@ -35,6 +38,27 @@ public class ExerciseController {
     public ResponseEntity<ApiResponse<Void>> updateVocabularyExercise(
             @RequestBody VocabularyExerciseUpdateRequest request) {
         exerciseService.updateVocabularyExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @GetMapping("/multiple-choice/{exerciseId}")
+    public ResponseEntity<ApiResponse<MultipleChoiceExerciseDetailResponse>> getMultipleChoiceExerciseDetail(
+            @PathVariable Long exerciseId) {
+        MultipleChoiceExerciseDetailResponse response = exerciseService.getMultipleChoiceExerciseDetailResponse(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/multiple-choice")
+    public ResponseEntity<ApiResponse<Void>> createMultipleChoiceExercise(
+            @RequestBody MultipleChoiceExerciseCreateRequest request) {
+        exerciseService.createMultipleChoiceExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @PutMapping("/multiple-choice")
+    public ResponseEntity<ApiResponse<Void>> updateMultipleChoiceExercise(
+            @RequestBody MultipleChoiceExerciseUpdateRequest request) {
+        exerciseService.updateMultipleChoiceExercise(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
     }
 }

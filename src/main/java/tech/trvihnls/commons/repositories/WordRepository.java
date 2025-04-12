@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tech.trvihnls.commons.domains.Word;
-import tech.trvihnls.features.word.dtos.query.WordQuery;
+import tech.trvihnls.features.material.dtos.query.WordQuery;
 
 import java.util.List;
 
@@ -29,4 +29,5 @@ public interface WordRepository extends JpaRepository<Word, Long> {
             """,
             nativeQuery = true)
     List<WordQuery> findByExerciseId(Long exerciseId);
+
 }
