@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
-import tech.trvihnls.features.excercise.dtos.request.admin.MultipleChoiceExerciseCreateRequest;
-import tech.trvihnls.features.excercise.dtos.request.admin.MultipleChoiceExerciseUpdateRequest;
-import tech.trvihnls.features.excercise.dtos.request.admin.VocabularyExerciseCreateRequest;
-import tech.trvihnls.features.excercise.dtos.request.admin.VocabularyExerciseUpdateRequest;
+import tech.trvihnls.features.excercise.dtos.request.admin.*;
+import tech.trvihnls.features.excercise.dtos.response.admin.MatchingExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
 import tech.trvihnls.features.excercise.services.ExerciseService;
@@ -59,6 +57,27 @@ public class ExerciseController {
     public ResponseEntity<ApiResponse<Void>> updateMultipleChoiceExercise(
             @RequestBody MultipleChoiceExerciseUpdateRequest request) {
         exerciseService.updateMultipleChoiceExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @GetMapping("/matching/{exerciseId}")
+    public ResponseEntity<ApiResponse<MatchingExerciseDetailResponse>> getMatchingExerciseDetail(
+            @PathVariable Long exerciseId) {
+        MatchingExerciseDetailResponse response = exerciseService.getMatchingExerciseDetail(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/matching")
+    public ResponseEntity<ApiResponse<Void>> createMatchingExercise(
+            @RequestBody MatchingExerciseCreateRequest request) {
+        exerciseService.createMatchingExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @PutMapping("/matching")
+    public ResponseEntity<ApiResponse<Void>> updateMatchingExercise(
+            @RequestBody MatchingExerciseUpdateRequest request) {
+        exerciseService.updateMatchingExercise(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
     }
 }

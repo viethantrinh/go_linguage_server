@@ -15,15 +15,13 @@ import tech.trvihnls.commons.utils.enums.ExerciseTypeEnum;
 import tech.trvihnls.commons.utils.enums.LanguageEnum;
 import tech.trvihnls.commons.utils.enums.MultipleChoiceExerciseEnum;
 import tech.trvihnls.features.excercise.dtos.request.admin.*;
-import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceOptionDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
+import tech.trvihnls.features.excercise.dtos.response.admin.*;
 import tech.trvihnls.features.excercise.services.ExerciseService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +33,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final WordRepository wordRepository;
     private final MultipleChoiceExerciseRepository multipleChoiceExerciseRepository;
     private final SentenceRepository sentenceRepository;
-    @PersistenceContext
-    private final EntityManager entityManager;
     private final MultipleChoiceOptionRepository multipleChoiceOptionRepository;
+    private final MatchingExerciseRepository matchingExerciseRepository;
+    private final MatchingPairRepository matchingPairRepository;
+    @PersistenceContext private final EntityManager entityManager;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
@@ -495,5 +494,179 @@ public class ExerciseServiceImpl implements ExerciseService {
         entityManager.flush();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public MatchingExerciseDetailResponse getMatchingExerciseDetail(Long exerciseId) {
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
 
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.MATCHING_WORD_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        MatchingExercise matchingExercise = matchingExerciseRepository.findByExerciseId(exerciseId)
+                .orElse(null);
+
+        if (matchingExercise == null) {
+            return MatchingExerciseDetailResponse.builder()
+                    .build();
+        }
+
+        List<MatchingPairDetailResponse> pairResponses = matchingExercise.getMatchingPairs().stream()
+                .map(pair -> {
+                    Word word = pair.getWord();
+                    return MatchingPairDetailResponse.builder()
+                            .id(pair.getId())
+                            .matchingExerciseId(matchingExercise.getId())
+                            .word(MatchingPairDetailResponse.WordDetail.builder()
+                                    .wordId(word.getId())
+                                    .englishText(word.getEnglishText())
+                                    .vietnameseText(word.getVietnameseText())
+                                    .imageUrl(word.getImageUrl())
+                                    .audioUrl(word.getAudioUrl())
+                                    .build())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return MatchingExerciseDetailResponse.builder()
+                .exerciseId(exercise.getId())
+                .exerciseName(exercise.getInstruction())
+                .matchingPairs(pairResponses)
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void createMatchingExercise(MatchingExerciseCreateRequest request) {
+        Long exerciseId = request.getExerciseId();
+
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.MATCHING_WORD_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        if (exercise.getMatchingExercise() != null) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Create matching exercise
+        MatchingExercise matchingExercise = MatchingExercise.builder()
+                .exercise(exercise)
+                .matchingPairs(new ArrayList<>())
+                .build();
+
+        MatchingExercise savedMatchingExercise = matchingExerciseRepository.save(matchingExercise);
+        exercise.setMatchingExercise(savedMatchingExercise);
+
+        // Create matching pairs
+        if (request.getMatchingPairs() != null && !request.getMatchingPairs().isEmpty()) {
+            for (MatchingPairCreateRequest pairRequest : request.getMatchingPairs()) {
+                Word word = wordRepository.findById(pairRequest.getWordId())
+                        .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+                MatchingPair matchingPair = MatchingPair.builder()
+                        .matchingExercise(savedMatchingExercise)
+                        .word(word)
+                        .build();
+
+                MatchingPair savedPair = matchingPairRepository.save(matchingPair);
+                savedMatchingExercise.getMatchingPairs().add(savedPair);
+            }
+        }
+
+        exerciseRepository.save(exercise);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void updateMatchingExercise(MatchingExerciseUpdateRequest request) {
+        Long exerciseId = request.getExerciseId();
+
+        // Validate exercise exists and is of correct type
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.MATCHING_WORD_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Check if matching exercise exists
+        MatchingExercise matchingExercise = matchingExerciseRepository.findByExerciseId(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Get the existing ID before deleting
+        Long matchingExerciseId = matchingExercise.getId();
+
+        // Delete all pairs first
+        entityManager.createNativeQuery("DELETE FROM tbl_matching_pair WHERE matching_exercise_id = :id")
+                .setParameter("id", matchingExerciseId)
+                .executeUpdate();
+
+        // Delete the matching exercise
+        entityManager.createNativeQuery("DELETE FROM tbl_matching_exercise WHERE id = :id")
+                .setParameter("id", matchingExerciseId)
+                .executeUpdate();
+
+        // Clear persistence context
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch exercise
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        exercise.setMatchingExercise(null);
+        entityManager.merge(exercise);
+        entityManager.flush();
+
+        // Create new matching exercise using native SQL
+        String insertSql = "INSERT INTO tbl_matching_exercise (exercise_id, created_at) VALUES (:exerciseId, NOW())";
+        entityManager.createNativeQuery(insertSql)
+                .setParameter("exerciseId", exerciseId)
+                .executeUpdate();
+
+        entityManager.flush();
+
+        // Get new matching exercise
+        MatchingExercise newMatchingExercise = matchingExerciseRepository.findByExerciseId(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Create matching pairs
+        if (request.getMatchingPairs() != null && !request.getMatchingPairs().isEmpty()) {
+            for (MatchingPairUpdateRequest pairRequest : request.getMatchingPairs()) {
+                // Verify word exists
+                Long wordId = pairRequest.getWordId();
+                if (!wordRepository.existsById(wordId)) {
+                    throw new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED);
+                }
+
+                // Insert pair
+                String insertPairSql = "INSERT INTO tbl_matching_pair (matching_exercise_id, word_id, created_at) " +
+                        "VALUES (:matchingExerciseId, :wordId, NOW())";
+                entityManager.createNativeQuery(insertPairSql)
+                        .setParameter("matchingExerciseId", newMatchingExercise.getId())
+                        .setParameter("wordId", wordId)
+                        .executeUpdate();
+            }
+        }
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch everything to ensure clean state
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        MatchingExercise refreshedMatchingExercise = entityManager.find(MatchingExercise.class,
+                newMatchingExercise.getId());
+
+        // Ensure proper relationships
+        exercise.setMatchingExercise(refreshedMatchingExercise);
+        refreshedMatchingExercise.setExercise(exercise);
+
+        entityManager.merge(exercise);
+        entityManager.merge(refreshedMatchingExercise);
+        entityManager.flush();
+    }
 }
