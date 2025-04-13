@@ -10,6 +10,7 @@ import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.material.dtos.response.admin.SentenceForMultipleChoiceExerciseResponse;
+import tech.trvihnls.features.material.dtos.response.admin.SentenceForWordArrangementExerciseResponse;
 import tech.trvihnls.features.material.services.SentenceService;
 
 import java.util.List;
@@ -26,6 +27,13 @@ public class SentenceController {
             @PathVariable Long exerciseId) {
         List<SentenceForMultipleChoiceExerciseResponse> sentences = 
                 sentenceService.getSentencesByMultipleChoiceExerciseId(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, sentences);
+    }
+
+    @GetMapping("/by-word-arrangement-exercise/{exerciseId}")
+    public ResponseEntity<ApiResponse<List<SentenceForWordArrangementExerciseResponse>>> getSentencesByWordArrangementExerciseId(
+            @PathVariable Long exerciseId) {
+        List<SentenceForWordArrangementExerciseResponse> sentences = sentenceService.getSentencesByWordArrangementExerciseId(exerciseId);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, sentences);
     }
 }

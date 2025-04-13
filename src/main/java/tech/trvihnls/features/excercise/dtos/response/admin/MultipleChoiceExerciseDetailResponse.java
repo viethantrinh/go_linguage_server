@@ -28,6 +28,7 @@ public class MultipleChoiceExerciseDetailResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long relatedSentenceId;
 
+    @Builder.Default
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<MultipleChoiceOptionDetailResponse> options = new ArrayList<>();
 }

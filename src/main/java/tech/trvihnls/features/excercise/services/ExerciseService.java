@@ -4,6 +4,7 @@ import tech.trvihnls.features.excercise.dtos.request.admin.*;
 import tech.trvihnls.features.excercise.dtos.response.admin.MatchingExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
+import tech.trvihnls.features.excercise.dtos.response.admin.WordArrangementExerciseDetailResponse;
 
 public interface ExerciseService {
     void createVocabularyExercise(VocabularyExerciseCreateRequest request);
@@ -17,4 +18,8 @@ public interface ExerciseService {
     MatchingExerciseDetailResponse getMatchingExerciseDetail(Long exerciseId);
     void createMatchingExercise(MatchingExerciseCreateRequest request);
     void updateMatchingExercise(MatchingExerciseUpdateRequest request);
+
+    WordArrangementExerciseDetailResponse getWordArrangementExerciseDetail(Long exerciseId);
+    void createWordArrangementExercise(WordArrangementExerciseCreateRequest request);
+    void updateWordArrangementExercise(WordArrangementExerciseUpdateRequest request);
 }

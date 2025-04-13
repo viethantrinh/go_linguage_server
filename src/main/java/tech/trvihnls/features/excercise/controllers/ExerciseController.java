@@ -10,6 +10,7 @@ import tech.trvihnls.features.excercise.dtos.request.admin.*;
 import tech.trvihnls.features.excercise.dtos.response.admin.MatchingExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
 import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
+import tech.trvihnls.features.excercise.dtos.response.admin.WordArrangementExerciseDetailResponse;
 import tech.trvihnls.features.excercise.services.ExerciseService;
 
 @RestController
@@ -78,6 +79,27 @@ public class ExerciseController {
     public ResponseEntity<ApiResponse<Void>> updateMatchingExercise(
             @RequestBody MatchingExerciseUpdateRequest request) {
         exerciseService.updateMatchingExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @GetMapping("/word-arrangement/{exerciseId}")
+    public ResponseEntity<ApiResponse<WordArrangementExerciseDetailResponse>> getWordArrangementExerciseDetail(
+            @PathVariable Long exerciseId) {
+        WordArrangementExerciseDetailResponse response = exerciseService.getWordArrangementExerciseDetail(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/word-arrangement")
+    public ResponseEntity<ApiResponse<Void>> createWordArrangementExercise(
+            @RequestBody WordArrangementExerciseCreateRequest request) {
+        exerciseService.createWordArrangementExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @PutMapping("/word-arrangement")
+    public ResponseEntity<ApiResponse<Void>> updateWordArrangementExercise(
+            @RequestBody WordArrangementExerciseUpdateRequest request) {
+        exerciseService.updateWordArrangementExercise(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
     }
 }

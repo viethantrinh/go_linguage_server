@@ -37,6 +37,8 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final MatchingExerciseRepository matchingExerciseRepository;
     private final MatchingPairRepository matchingPairRepository;
     @PersistenceContext private final EntityManager entityManager;
+    private final WordArrangementExerciseRepository wordArrangementExerciseRepository;
+    private final WordArrangementOptionRepository wordArrangementOptionRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
@@ -667,6 +669,222 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         entityManager.merge(exercise);
         entityManager.merge(refreshedMatchingExercise);
+        entityManager.flush();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public WordArrangementExerciseDetailResponse getWordArrangementExerciseDetail(Long exerciseId) {
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.WORD_ARRANGEMENT_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        WordArrangementExercise wordArrangementExercise = exercise.getWordArrangementExercise();
+        if (wordArrangementExercise == null) {
+            return WordArrangementExerciseDetailResponse.builder()
+                    .build();
+        }
+
+        WordArrangementExerciseDetailResponse.WordArrangementExerciseDetailResponseBuilder builder =
+                WordArrangementExerciseDetailResponse.builder()
+                        .exerciseId(exercise.getId())
+                        .exerciseName(exercise.getInstruction())
+                        .sourceLanguage(wordArrangementExercise.getSourceLanguage().name())
+                        .targetLanguage(wordArrangementExercise.getTargetLanguage().name());
+
+        if (wordArrangementExercise.getSentence() != null) {
+            Sentence sentence = wordArrangementExercise.getSentence();
+            builder.sentenceId(sentence.getId());
+            builder.sentence(WordArrangementExerciseDetailResponse.SentenceDetail.builder()
+                    .sentenceId(sentence.getId())
+                    .englishText(sentence.getEnglishText())
+                    .vietnameseText(sentence.getVietnameseText())
+                    .audioUrl(sentence.getAudioUrl())
+                    .build());
+        }
+
+        List<WordArrangementOptionDetailResponse> optionResponses = wordArrangementExercise.getWordArrangementOptions().stream()
+                .map(option -> WordArrangementOptionDetailResponse.builder()
+                        .id(option.getId())
+                        .wordArrangementExerciseId(wordArrangementExercise.getId())
+                        .wordText(option.getWordText())
+                        .isDistractor(option.isDistractor())
+                        .correctPosition(option.getCorrectPosition())
+                        .build())
+                .collect(Collectors.toList());
+
+        builder.options(optionResponses);
+
+        return builder.build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void createWordArrangementExercise(WordArrangementExerciseCreateRequest request) {
+        Long exerciseId = request.getExerciseId();
+        Long sentenceId = request.getSentenceId();
+
+        // Validate exercise exists and is of correct type
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.WORD_ARRANGEMENT_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Check if word arrangement exercise already exists
+        if (exercise.getWordArrangementExercise() != null) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Get sentence
+        Sentence sentence = sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Convert string enums to actual enum values
+        LanguageEnum sourceLanguage = LanguageEnum.valueOf(request.getSourceLanguage().toLowerCase());
+        LanguageEnum targetLanguage = LanguageEnum.valueOf(request.getTargetLanguage().toLowerCase());
+
+        // Create word arrangement exercise
+        WordArrangementExercise wordArrangementExercise = WordArrangementExercise.builder()
+                .sourceLanguage(sourceLanguage)
+                .targetLanguage(targetLanguage)
+                .exercise(exercise)
+                .sentence(sentence)
+                .wordArrangementOptions(new ArrayList<>())
+                .build();
+
+        // Set up bidirectional relationship
+        exercise.setWordArrangementExercise(wordArrangementExercise);
+
+        // Save the exercise
+        WordArrangementExercise savedExercise = wordArrangementExerciseRepository.save(wordArrangementExercise);
+
+        // Create options
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            for (WordArrangementOptionCreateRequest optionRequest : request.getOptions()) {
+                WordArrangementOption option = WordArrangementOption.builder()
+                        .wordText(optionRequest.getWordText())
+                        .isDistractor(optionRequest.isDistractor())
+                        .correctPosition(optionRequest.getCorrectPosition())
+                        .wordArrangementExercise(savedExercise)
+                        .build();
+
+                WordArrangementOption savedOption = wordArrangementOptionRepository.save(option);
+                savedExercise.getWordArrangementOptions().add(savedOption);
+            }
+        }
+
+        exerciseRepository.save(exercise);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void updateWordArrangementExercise(WordArrangementExerciseUpdateRequest request) {
+        Long exerciseId = request.getExerciseId();
+
+        // Validate exercise exists and is of correct type
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.WORD_ARRANGEMENT_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Check if word arrangement exercise exists
+        if (exercise.getWordArrangementExercise() == null) {
+            throw new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED);
+        }
+
+        // Get the existing ID before deleting
+        Long wordArrangementExerciseId = exercise.getWordArrangementExercise().getId();
+
+        // Delete all options first
+        entityManager.createNativeQuery("DELETE FROM tbl_word_arrangement_option WHERE word_arrangement_exercise_id = :id")
+                .setParameter("id", wordArrangementExerciseId)
+                .executeUpdate();
+
+        // Delete the word arrangement exercise
+        entityManager.createNativeQuery("DELETE FROM tbl_word_arrangement_exercise WHERE id = :id")
+                .setParameter("id", wordArrangementExerciseId)
+                .executeUpdate();
+
+        // Clear persistence context
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch exercise
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        exercise.setWordArrangementExercise(null);
+        entityManager.merge(exercise);
+        entityManager.flush();
+
+        // Get sentence
+        Long sentenceId = request.getSentenceId();
+        // Verify sentence exists
+        sentenceRepository.findById(sentenceId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Convert string enums to actual enum values
+        LanguageEnum sourceLanguage = LanguageEnum.valueOf(request.getSourceLanguage().toLowerCase());
+        LanguageEnum targetLanguage = LanguageEnum.valueOf(request.getTargetLanguage().toLowerCase());
+
+        // Create new word arrangement exercise using native SQL
+        String insertSql = "INSERT INTO tbl_word_arrangement_exercise " +
+                "(source_language, target_language, exercise_id, sentence_id, created_at) " +
+                "VALUES (:sourceLanguage, :targetLanguage, :exerciseId, :sentenceId, NOW())";
+
+        entityManager.createNativeQuery(insertSql)
+                .setParameter("sourceLanguage", sourceLanguage.name())
+                .setParameter("targetLanguage", targetLanguage.name())
+                .setParameter("exerciseId", exerciseId)
+                .setParameter("sentenceId", sentenceId)
+                .executeUpdate();
+
+        entityManager.flush();
+
+        // Get the newly created word arrangement exercise
+        WordArrangementExercise newExercise = wordArrangementExerciseRepository.findById(
+                        wordArrangementExerciseRepository.findByExerciseId(exerciseId)
+                                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED))
+                                .getId())
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Create options
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            for (WordArrangementOptionUpdateRequest optionRequest : request.getOptions()) {
+                String optionSql = "INSERT INTO tbl_word_arrangement_option " +
+                        "(word_text, is_distractor, correct_position, word_arrangement_exercise_id, created_at) " +
+                        "VALUES (:wordText, :isDistractor, :correctPosition, :exerciseId, NOW())";
+
+                entityManager.createNativeQuery(optionSql)
+                        .setParameter("wordText", optionRequest.getWordText())
+                        .setParameter("isDistractor", optionRequest.isDistractor())
+                        .setParameter("correctPosition", optionRequest.getCorrectPosition() != null ? optionRequest.getCorrectPosition() : -1)
+                        .setParameter("exerciseId", newExercise.getId())
+                        .executeUpdate();
+            }
+        }
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch everything to ensure clean state
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        WordArrangementExercise refreshedExercise = entityManager.find(WordArrangementExercise.class,
+                newExercise.getId());
+
+        // Ensure proper relationships
+        exercise.setWordArrangementExercise(refreshedExercise);
+        refreshedExercise.setExercise(exercise);
+
+        entityManager.merge(exercise);
+        entityManager.merge(refreshedExercise);
         entityManager.flush();
     }
 }
