@@ -71,4 +71,10 @@ public class TopicController {
         var topics = topicService.updateTopic(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, topics);
     }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<TopicBasicResponse>>> getAllTopics() {
+        List<TopicBasicResponse> topics = topicService.getBasicTopicList();
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, topics);
+    }
 }

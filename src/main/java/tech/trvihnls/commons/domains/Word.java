@@ -21,10 +21,10 @@ public class Word extends BaseEntity {
     @Column(name = "vietnamese_text", nullable = false)
     private String vietnameseText;
 
-    @Column(name = "audio_url", nullable = false)
+    @Column(name = "audio_url")
     private String audioUrl;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url")
     private String imageUrl;
 
     @OneToOne(mappedBy = "word")
@@ -38,6 +38,10 @@ public class Word extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "sentence_id")
     )
     private List<Sentence> sentences = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "words")
+    @Builder.Default
+    private List<Topic> topics = new ArrayList<>();
 
     public Word(Long id) {
         super(id);

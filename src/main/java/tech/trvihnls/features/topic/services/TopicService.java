@@ -22,7 +22,7 @@ public interface TopicService {
     TopicImageResponse createOrUpdateImage(MultipartFile file, Long topicId);
     TopicDetailAdminResponse getTopicDetail(Long topicId);
     TopicUpdateAdminResponse updateTopic(TopicUpdateAdminRequest request);
-
+    List<TopicBasicResponse> getBasicTopicList();
     default ExerciseDetailResponse<WordArrangementExerciseResponse> buildWordArrangementExerciseResponse(Exercise exercise) {
         return null;
     }

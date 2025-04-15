@@ -926,4 +926,15 @@ public class TopicServiceImpl implements TopicService {
                 .data(data)
                 .build();
     }
+
+    @Override
+    public List<TopicBasicResponse> getBasicTopicList() {
+        List<Topic> topics = topicRepository.findAll();
+        return topics.stream()
+                .map(topic -> TopicBasicResponse.builder()
+                        .id(topic.getId())
+                        .name(topic.getName())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
