@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import tech.trvihnls.commons.domains.Sentence;
 import tech.trvihnls.commons.domains.Topic;
 import tech.trvihnls.commons.domains.Word;
@@ -18,7 +17,6 @@ import tech.trvihnls.commons.repositories.TopicRepository;
 import tech.trvihnls.commons.repositories.WordRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.material.dtos.request.admin.SentenceRequest;
-import tech.trvihnls.features.material.dtos.response.admin.SentenceAudioResponse;
 import tech.trvihnls.features.material.dtos.response.admin.SentenceResponse;
 import tech.trvihnls.features.material.services.SentenceManagementService;
 
@@ -57,6 +55,7 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public SentenceResponse createSentence(SentenceRequest request) {
         Sentence sentence = new Sentence();
         updateSentenceFromRequest(sentence, request);
@@ -68,6 +67,7 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public SentenceResponse updateSentence(Long id, SentenceRequest request) {
         Sentence sentence = sentenceRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
@@ -80,7 +80,6 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     private void updateSentenceFromRequest(Sentence sentence, SentenceRequest request) {
         sentence.setEnglishText(request.getEnglishText());
         sentence.setVietnameseText(request.getVietnameseText());
-        sentence.setAudioUrl(request.getAudioUrl());
 
         // Handle topic associations
         if (request.getTopicIds() != null) {
@@ -155,30 +154,6 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
 
         // Delete the sentence
         sentenceRepository.deleteById(id);
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public SentenceAudioResponse createOrUpdateAudio(MultipartFile file, Long sentenceId) {
-        Sentence sentence = sentenceRepository.findById(sentenceId)
-                .orElseThrow(() -> new AppException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
-
-        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud
-        // create new audio and get back link
-        // CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(file);
-        // String audioUrl = cloudinaryUrlResponse.getSecureUrl();
-
-        String audioUrl = "SAMPLE_AUDIO_URL";
-
-        // set to sentence
-        sentence.setAudioUrl(audioUrl);
-
-        // save or update
-        Sentence savedSentence = sentenceRepository.save(sentence);
-
-        return SentenceAudioResponse.builder()
-                .audioUrl(savedSentence.getAudioUrl())
-                .build();
     }
 
     private SentenceResponse mapToSentenceResponse(Sentence sentence) {

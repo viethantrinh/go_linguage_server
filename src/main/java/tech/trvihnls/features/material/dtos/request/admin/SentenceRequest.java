@@ -15,7 +15,6 @@ import java.util.List;
 public class SentenceRequest {
     private String englishText;
     private String vietnameseText;
-    private String audioUrl;
     private List<Long> topicIds;
     private List<Long> wordIds;
 }
