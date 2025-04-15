@@ -17,10 +17,13 @@ import tech.trvihnls.commons.repositories.SentenceRepository;
 import tech.trvihnls.commons.repositories.TopicRepository;
 import tech.trvihnls.commons.repositories.WordRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.features.ai.services.TtsService;
 import tech.trvihnls.features.material.dtos.request.admin.WordRequest;
 import tech.trvihnls.features.material.dtos.response.admin.WordImageResponse;
 import tech.trvihnls.features.material.dtos.response.admin.WordResponse;
 import tech.trvihnls.features.material.services.WordManagementService;
+import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
+import tech.trvihnls.features.media.services.MediaUploadService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,8 @@ public class WordManagementServiceImpl implements WordManagementService {
     // Inject EntityManager
     @PersistenceContext
     private final EntityManager entityManager;
+    private final TtsService ttsService;
+    private final MediaUploadService cloudinaryMediaUploadServiceImpl;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -58,7 +63,6 @@ public class WordManagementServiceImpl implements WordManagementService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public WordResponse createWord(WordRequest request) {
         Word word = new Word();
         updateWordFromRequest(word, request);
@@ -70,7 +74,6 @@ public class WordManagementServiceImpl implements WordManagementService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public WordResponse updateWord(Long id, WordRequest request) {
         Word word = wordRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
@@ -81,6 +84,14 @@ public class WordManagementServiceImpl implements WordManagementService {
     }
 
     private void updateWordFromRequest(Word word, WordRequest request) {
+
+        if (word.getEnglishText() == null || !word.getEnglishText().equalsIgnoreCase(request.getEnglishText())) {
+            String englishText = request.getEnglishText();
+            byte[] audioBytesData = ttsService.requestTextToSpeech(englishText);
+            CloudinaryUrlResponse cloudinaryUrlResponse = cloudinaryMediaUploadServiceImpl.uploadAudio(audioBytesData);
+            word.setAudioUrl(cloudinaryUrlResponse.getSecureUrl());
+        }
+
         word.setEnglishText(request.getEnglishText());
         word.setVietnameseText(request.getVietnameseText());
 

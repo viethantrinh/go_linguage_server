@@ -13,7 +13,7 @@ import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.achievement.dtos.response.AchievementResponse;
-import tech.trvihnls.features.ai.services.GroqTranscribeService;
+import tech.trvihnls.features.ai.services.impl.GroqTranscribeService;
 import tech.trvihnls.features.conversation.dtos.request.ConversationSubmitRequest;
 import tech.trvihnls.features.conversation.dtos.response.ConversationLineResponse;
 import tech.trvihnls.features.conversation.dtos.response.ConversationSubmitResponse;

@@ -5,7 +5,8 @@ import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
 
 public interface MediaUploadService {
     CloudinaryUrlResponse uploadImage(MultipartFile multipartFile, int width, int height);
-
     CloudinaryUrlResponse uploadAudio(MultipartFile multipartFile);
+    CloudinaryUrlResponse uploadAudio(String audioUrl);
+    CloudinaryUrlResponse uploadAudio(byte[] audioByte);
 }
 

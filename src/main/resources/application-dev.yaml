@@ -60,3 +60,8 @@ cloudinary:
 # config for groq ai
 groq:
   api-key: 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
+
+# config for tts
+tts:
+  elevenlab:
+    api-key: sk_5929ee0a807adaf0409f031af72a1e057ac6cca8fdf2e4fd

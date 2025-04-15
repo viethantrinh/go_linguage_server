@@ -4,7 +4,7 @@ import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import tech.trvihnls.features.ai.services.GroqTranscribeService;
+import tech.trvihnls.features.ai.services.impl.GroqTranscribeService;
 import tech.trvihnls.features.learn.dtos.response.PronounAssessmentResponse;
 import tech.trvihnls.features.learn.services.PronounAssessmentService;
 

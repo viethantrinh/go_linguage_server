@@ -1,4 +1,4 @@
-package tech.trvihnls.features.ai.services;
+package tech.trvihnls.features.ai.services.impl;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;

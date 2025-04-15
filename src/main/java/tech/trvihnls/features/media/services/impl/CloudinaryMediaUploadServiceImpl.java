@@ -78,4 +78,56 @@ public class CloudinaryMediaUploadServiceImpl implements MediaUploadService {
                 .url((String) result.get("url"))
                 .build();
     }
+
+    @Override
+    public CloudinaryUrlResponse uploadAudio(String audioUrl) {
+        assert audioUrl != null;
+        var cloudinaryUploadOptions = ObjectUtils.asMap(
+                AppConstants.CLOUDINARY_PUBLIC_ID_KEY, UUID.randomUUID().toString(),
+                AppConstants.CLOUDINARY_ASSET_FOLDER_KEY, "audios",
+                AppConstants.CLOUDINARY_RESOURCE_TYPE_KEY, "video",
+                AppConstants.CLOUDINARY_TRANSFORMATION_KEY, new Transformation<>()
+                        .audioCodec("opus")
+                        .audioFrequency("48000")
+                        .fetchFormat("ogg")
+                        .quality("auto")
+        );
+
+        Map result;
+        try {
+            result = cloudinary.uploader().upload(audioUrl, cloudinaryUploadOptions);
+        } catch (IOException e) {
+            throw new AppException(ErrorCodeEnum.UPLOAD_RESOURCE_FAILED);
+        }
+        return CloudinaryUrlResponse.builder()
+                .secureUrl((String) result.get("secure_url"))
+                .url((String) result.get("url"))
+                .build();
+    }
+
+    @Override
+    public CloudinaryUrlResponse uploadAudio(byte[] audioByte) {
+        assert audioByte != null;
+        var cloudinaryUploadOptions = ObjectUtils.asMap(
+                AppConstants.CLOUDINARY_PUBLIC_ID_KEY, UUID.randomUUID().toString(),
+                AppConstants.CLOUDINARY_RESOURCE_TYPE_KEY, "video",
+                AppConstants.CLOUDINARY_ASSET_FOLDER_KEY, "audios",
+                AppConstants.CLOUDINARY_TRANSFORMATION_KEY, new Transformation<>()
+                        .audioCodec("opus")
+                        .audioFrequency("48000")
+                        .fetchFormat("ogg")
+                        .quality("auto")
+        );
+
+        Map result;
+        try {
+            result = cloudinary.uploader().upload(audioByte, cloudinaryUploadOptions);
+        } catch (IOException e) {
+            throw new AppException(ErrorCodeEnum.UPLOAD_RESOURCE_FAILED);
+        }
+        return CloudinaryUrlResponse.builder()
+                .secureUrl((String) result.get("secure_url"))
+                .url((String) result.get("url"))
+                .build();
+    }
 }

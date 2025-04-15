@@ -16,9 +16,12 @@ import tech.trvihnls.commons.repositories.SentenceRepository;
 import tech.trvihnls.commons.repositories.TopicRepository;
 import tech.trvihnls.commons.repositories.WordRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.features.ai.services.TtsService;
 import tech.trvihnls.features.material.dtos.request.admin.SentenceRequest;
 import tech.trvihnls.features.material.dtos.response.admin.SentenceResponse;
 import tech.trvihnls.features.material.services.SentenceManagementService;
+import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
+import tech.trvihnls.features.media.services.MediaUploadService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +37,8 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     // Inject EntityManager
     @PersistenceContext
     private final EntityManager entityManager;
+    private final MediaUploadService cloudinaryMediaUploadServiceImpl;
+    private final TtsService ttsService;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,7 +60,6 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public SentenceResponse createSentence(SentenceRequest request) {
         Sentence sentence = new Sentence();
         updateSentenceFromRequest(sentence, request);
@@ -67,7 +71,6 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    // TODO: triển khai gọi đến AI để text to speech nhận kết quả - lưu url lên cloudinary
     public SentenceResponse updateSentence(Long id, SentenceRequest request) {
         Sentence sentence = sentenceRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
@@ -78,6 +81,14 @@ public class SentenceManagementServiceImpl implements SentenceManagementService 
     }
 
     private void updateSentenceFromRequest(Sentence sentence, SentenceRequest request) {
+
+        if (sentence.getEnglishText() == null || !sentence.getEnglishText().equalsIgnoreCase(request.getEnglishText())) {
+            String englishText = request.getEnglishText();
+            byte[] audioBytesData = ttsService.requestTextToSpeech(englishText);
+            CloudinaryUrlResponse cloudinaryUrlResponse = cloudinaryMediaUploadServiceImpl.uploadAudio(audioBytesData);
+            sentence.setAudioUrl(cloudinaryUrlResponse.getSecureUrl());
+        }
+
         sentence.setEnglishText(request.getEnglishText());
         sentence.setVietnameseText(request.getVietnameseText());
 
