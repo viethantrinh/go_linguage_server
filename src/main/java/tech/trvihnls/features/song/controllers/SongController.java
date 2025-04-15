@@ -2,13 +2,12 @@ package tech.trvihnls.features.song.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
+import tech.trvihnls.features.song.dtos.request.SongCreateRequest;
+import tech.trvihnls.features.song.dtos.response.SongCreateResponse;
 import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
 import tech.trvihnls.features.song.services.SongService;
 
@@ -31,4 +30,11 @@ public class SongController {
     public ResponseEntity<ApiResponse<List<SongDetailResponse>>> listAllSongs() {
         var response = songService.getAllSongs();
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
-    }}
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<SongCreateResponse>> createSong(@RequestBody SongCreateRequest request) {
+        SongCreateResponse response = songService.createSongLyric(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+}

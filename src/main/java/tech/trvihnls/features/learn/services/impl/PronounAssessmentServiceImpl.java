@@ -4,7 +4,7 @@ import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import tech.trvihnls.features.ai.services.impl.GroqTranscribeService;
+import tech.trvihnls.features.ai.services.impl.GroqServiceImpl;
 import tech.trvihnls.features.learn.dtos.response.PronounAssessmentResponse;
 import tech.trvihnls.features.learn.services.PronounAssessmentService;
 
@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PronounAssessmentServiceImpl implements PronounAssessmentService {
 
-    private final GroqTranscribeService transcribeService;
+    private final GroqServiceImpl transcribeService;
 
     private final NormalizedLevenshtein levenshtein = new NormalizedLevenshtein();
 

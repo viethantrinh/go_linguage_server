@@ -13,7 +13,7 @@ import tech.trvihnls.commons.utils.SecurityUtils;
 import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.achievement.dtos.response.AchievementResponse;
-import tech.trvihnls.features.ai.services.impl.GroqTranscribeService;
+import tech.trvihnls.features.ai.services.impl.GroqServiceImpl;
 import tech.trvihnls.features.conversation.dtos.request.ConversationSubmitRequest;
 import tech.trvihnls.features.conversation.dtos.response.ConversationLineResponse;
 import tech.trvihnls.features.conversation.dtos.response.ConversationSubmitResponse;
@@ -30,7 +30,7 @@ public class ConversationServiceImpl implements ConversationService {
 
     private final ConversationLineRepository conversationLineRepository;
     private final ConversationUserOptionRepository conversationUserOptionRepository;
-    private final GroqTranscribeService groqTranscribeService;
+    private final GroqServiceImpl groqServiceImpl;
     private final UserRepository userRepository;
     private final UserConversationAttemptRepository userConversationAttemptRepository;
     private final AchievementRepository achievementRepository;
@@ -65,7 +65,7 @@ public class ConversationServiceImpl implements ConversationService {
         if (conversationUserOptions.isEmpty())
             throw new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED);
 
-        String transcribedUserText = groqTranscribeService.transcribeAudio(audioFile);
+        String transcribedUserText = groqServiceImpl.transcribeAudio(audioFile);
 
         // Clean up the transcribed text
         transcribedUserText = normalizeText(transcribedUserText);
