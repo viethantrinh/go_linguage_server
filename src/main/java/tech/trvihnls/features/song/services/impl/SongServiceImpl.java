@@ -14,12 +14,10 @@ import tech.trvihnls.features.ai.services.SunoService;
 import tech.trvihnls.features.ai.services.WhisperAlignmentService;
 import tech.trvihnls.features.media.services.MediaUploadService;
 import tech.trvihnls.features.song.dtos.request.SongCreateRequest;
-import tech.trvihnls.features.song.dtos.response.SongAfterForceAlignmentResponse;
-import tech.trvihnls.features.song.dtos.response.SongAfterUploadToCloudinaryResponse;
-import tech.trvihnls.features.song.dtos.response.SongCreateResponse;
-import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
+import tech.trvihnls.features.song.dtos.response.*;
 import tech.trvihnls.features.song.services.SongService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +58,24 @@ public class SongServiceImpl implements SongService {
                         .vietnameseLyric(s.getVietnameseLyric())
                         .displayOrder(s.getDisplayOrder())
                         .wordTimestamp(s.getWordTimeStamp())
+                        .build()
+                )
+                .toList();
+    }
+
+    @Override
+    public List<SongResponse> getSongs() {
+        return songRepository.findByOrderByDisplayOrderAsc().stream()
+                .map((s) -> SongResponse.builder()
+                        .id(s.getId())
+                        .name(s.getName())
+                        .englishLyric(s.getEnglishLyric())
+                        .vietnameseLyric(s.getVietnameseLyric())
+                        .audioUrl(s.getAudioUrl())
+                        .sunoTaskId(s.getSunoTaskId())
+                        .creationStatus(s.getCreationStatus())
+                        .createdAt(s.getCreatedAt())
+                        .displayOrder(s.getDisplayOrder())
                         .build()
                 )
                 .toList();
@@ -117,15 +133,25 @@ public class SongServiceImpl implements SongService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public boolean checkCreateSongWithSunoSuccess(Long songId) {
+    public Map<String, Object> checkCreateSongWithSunoSuccess(Long songId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
         String taskId = song.getSunoTaskId();
-        if (taskId == null) {
-            return false;
-        }
         boolean isSuccess = sunoService.isSongCreateSuccess(taskId);
-        return isSuccess;
+        Song savedSong = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+        Map<String, Object> result = new HashMap<>();
+        if (isSuccess) {
+            result.put("status", true);
+            result.put("name", savedSong.getName());
+            result.put("audioUrl", savedSong.getAudioUrl());
+        } else {
+            result.put("status", false);
+            result.put("name", savedSong.getName());
+            result.put("audioUrl", null);
+            return result;
+        }
+        return result;
     }
 
     @Override
