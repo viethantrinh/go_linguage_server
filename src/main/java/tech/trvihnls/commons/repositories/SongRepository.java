@@ -11,4 +11,7 @@ import java.util.List;
 public interface SongRepository extends JpaRepository<Song, Long> {
     @Query("select s from Song s order by s.displayOrder")
     List<Song> findByOrderByDisplayOrderAsc();
+
+    @Query("select s from Song s where s.sunoTaskId = ?1")
+    Song findBySunoTaskId(String sunoTaskId);
 }

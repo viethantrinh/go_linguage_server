@@ -7,11 +7,14 @@ import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.song.dtos.request.SongCreateRequest;
+import tech.trvihnls.features.song.dtos.response.SongAfterForceAlignmentResponse;
+import tech.trvihnls.features.song.dtos.response.SongAfterUploadToCloudinaryResponse;
 import tech.trvihnls.features.song.dtos.response.SongCreateResponse;
 import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
 import tech.trvihnls.features.song.services.SongService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/songs")
@@ -33,8 +36,33 @@ public class SongController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<SongCreateResponse>> createSong(@RequestBody SongCreateRequest request) {
+    public ResponseEntity<ApiResponse<SongCreateResponse>> createSongWithLyric(@RequestBody SongCreateRequest request) {
         SongCreateResponse response = songService.createSongLyric(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/{id}/audio")
+    public ResponseEntity<ApiResponse<SongCreateResponse>> createSongWithSuno(@PathVariable Long id) {
+        var response = songService.createSongWithSuno(id);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkCreateSongWithSunoStatus(@PathVariable Long id) {
+        var status = songService.checkCreateSongWithSunoSuccess(id);
+        Map<String, Boolean> response = Map.of("status", status);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/{id}/force-alignment")
+    public ResponseEntity<ApiResponse<SongAfterForceAlignmentResponse>> forceAlignmentLyric(@PathVariable Long id) {
+        var response = songService.forceAlignmentSongLyric(id);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/{id}/upload-cloudinary")
+    public ResponseEntity<ApiResponse<SongAfterUploadToCloudinaryResponse>> uploadToCloudinary(@PathVariable Long id) {
+        var response = songService.uploadSongToCloudinary(id);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
     }
 }

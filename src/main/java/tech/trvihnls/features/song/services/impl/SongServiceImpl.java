@@ -1,14 +1,21 @@
 package tech.trvihnls.features.song.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import tech.trvihnls.commons.domains.Song;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.SongRepository;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
+import tech.trvihnls.commons.utils.enums.SongCreationStatusEnum;
 import tech.trvihnls.features.ai.services.GroqService;
+import tech.trvihnls.features.ai.services.SunoService;
+import tech.trvihnls.features.ai.services.WhisperAlignmentService;
+import tech.trvihnls.features.media.services.MediaUploadService;
 import tech.trvihnls.features.song.dtos.request.SongCreateRequest;
+import tech.trvihnls.features.song.dtos.response.SongAfterForceAlignmentResponse;
+import tech.trvihnls.features.song.dtos.response.SongAfterUploadToCloudinaryResponse;
 import tech.trvihnls.features.song.dtos.response.SongCreateResponse;
 import tech.trvihnls.features.song.dtos.response.SongDetailResponse;
 import tech.trvihnls.features.song.services.SongService;
@@ -17,10 +24,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SongServiceImpl implements SongService {
     private final SongRepository songRepository;
     private final GroqService groqService;
+    private final SunoService sunoService;
+    private final WhisperAlignmentService whisperAlignmentService;
+    private final MediaUploadService mediaUploadService;
+
 
     @Override
     public SongDetailResponse getSongById(Long id) {
@@ -69,6 +81,8 @@ public class SongServiceImpl implements SongService {
 
         songBuilder.englishLyric(result.get("englishLyric"));
         songBuilder.vietnameseLyric(result.get("vietnameseLyric"));
+        songBuilder.sunoTaskId(null);
+        songBuilder.creationStatus(SongCreationStatusEnum.lyric_created);
 
         Song savedSong = songRepository.save(songBuilder.build());
 
@@ -77,6 +91,93 @@ public class SongServiceImpl implements SongService {
                 .name(savedSong.getName())
                 .englishLyric(savedSong.getEnglishLyric())
                 .vietnameseLyric(savedSong.getVietnameseLyric())
+                .sunoTaskId(savedSong.getSunoTaskId())
+                .creationStatus(savedSong.getCreationStatus())
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public SongCreateResponse createSongWithSuno(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+        String taskId = sunoService.generateMusic(song);
+        song.setSunoTaskId(taskId);
+        song.setCreationStatus(SongCreationStatusEnum.audio_processing);
+        Song savedSong = songRepository.save(song);
+        return SongCreateResponse.builder()
+                .id(savedSong.getId())
+                .name(savedSong.getName())
+                .englishLyric(savedSong.getEnglishLyric())
+                .vietnameseLyric(savedSong.getVietnameseLyric())
+                .sunoTaskId(savedSong.getSunoTaskId())
+                .creationStatus(savedSong.getCreationStatus())
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public boolean checkCreateSongWithSunoSuccess(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+        String taskId = song.getSunoTaskId();
+        if (taskId == null) {
+            return false;
+        }
+        boolean isSuccess = sunoService.isSongCreateSuccess(taskId);
+        return isSuccess;
+    }
+
+    @Override
+    public SongAfterForceAlignmentResponse forceAlignmentSongLyric(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+        Song savedAlignedSong = whisperAlignmentService.forceAlignmentSong(song);
+        return SongAfterForceAlignmentResponse.builder()
+                .id(savedAlignedSong.getId())
+                .name(savedAlignedSong.getName())
+                .audioUrl(savedAlignedSong.getAudioUrl())
+                .englishLyric(savedAlignedSong.getEnglishLyric())
+                .vietnameseLyric(savedAlignedSong.getVietnameseLyric())
+                .timestamps(
+                        savedAlignedSong.getWordTimeStamp().getWords().stream()
+                                .map(w -> SongAfterForceAlignmentResponse.WordTimestamp.builder()
+                                        .word(w.getWord())
+                                        .startTime(w.getStart())
+                                        .endTime(w.getEnd())
+                                        .build()
+                                )
+                                .toList()
+                )
+                .build();
+    }
+
+    @Override
+    public SongAfterUploadToCloudinaryResponse uploadSongToCloudinary(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+        // TODO: tắt để test
+//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(song.getAudioUrl());
+//        song.setAudioUrl(cloudinaryUrlResponse.getSecureUrl());
+        song.setAudioUrl("SAMPLE_URL");
+        song.setCreationStatus(SongCreationStatusEnum.completed);
+        Song savedSong = songRepository.save(song);
+        return SongAfterUploadToCloudinaryResponse.builder()
+                .id(savedSong.getId())
+                .name(savedSong.getName())
+                .audioUrl(savedSong.getAudioUrl())
+                .englishLyric(savedSong.getEnglishLyric())
+                .vietnameseLyric(savedSong.getVietnameseLyric())
+                .timestamps(
+                        savedSong.getWordTimeStamp().getWords().stream()
+                                .map(w -> SongAfterUploadToCloudinaryResponse.WordTimestamp.builder()
+                                        .word(w.getWord())
+                                        .startTime(w.getStart())
+                                        .endTime(w.getEnd())
+                                        .build()
+                                )
+                                .toList()
+                )
                 .build();
     }
 }

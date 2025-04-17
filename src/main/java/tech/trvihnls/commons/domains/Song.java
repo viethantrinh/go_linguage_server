@@ -1,13 +1,12 @@
 package tech.trvihnls.commons.domains;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
+import tech.trvihnls.commons.utils.enums.SongCreationStatusEnum;
 
 @Getter
 @Setter
@@ -36,4 +35,11 @@ public class Song extends BaseEntity {
 
     @Column(name = "display_order")
     private int displayOrder;
+
+    @Column(name = "suno_task_id")
+    private String sunoTaskId;
+
+    @Column(name = "creation_status")
+    @Enumerated(EnumType.STRING)
+    private SongCreationStatusEnum creationStatus;
 }

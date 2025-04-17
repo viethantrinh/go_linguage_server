@@ -1,23 +1,23 @@
-package tech.trvihnls.general;
-
-//@Slf4j
-//@SpringBootTest
-//@ActiveProfiles({"dev"})
-//@RequiredArgsConstructor
-public class TtsTest {
-
-//    @Autowired
-//    private TtsService ttsService;
+//package tech.trvihnls.general;
 //
-//    @Autowired
-//    private MediaUploadService mediaUploadService;
+////@Slf4j
+////@SpringBootTest
+////@ActiveProfiles({"dev"})
+////@RequiredArgsConstructor
+//public class TtsTest {
 //
-//    @Test
-//    void testUploadAudioWithCustomOption() throws Exception {
-//        byte[] audioData = ttsService.requestTextToSpeech("Hello");
-//        // Upload the file using your service
-//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(audioData);
-//        System.out.println(cloudinaryUrlResponse);
-//    }
-
-}
+////    @Autowired
+////    private TtsService ttsService;
+////
+////    @Autowired
+////    private MediaUploadService mediaUploadService;
+////
+////    @Test
+////    void testUploadAudioWithCustomOption() throws Exception {
+////        byte[] audioData = ttsService.requestTextToSpeech("Hello");
+////        // Upload the file using your service
+////        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(audioData);
+////        System.out.println(cloudinaryUrlResponse);
+////    }
+//
+//}
