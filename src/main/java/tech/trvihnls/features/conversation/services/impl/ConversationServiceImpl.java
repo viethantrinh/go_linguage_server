@@ -10,19 +10,25 @@ import tech.trvihnls.commons.exceptions.AppException;
 import tech.trvihnls.commons.exceptions.ResourceNotFoundException;
 import tech.trvihnls.commons.repositories.*;
 import tech.trvihnls.commons.utils.SecurityUtils;
+import tech.trvihnls.commons.utils.enums.ConversationEntryGenderEnum;
 import tech.trvihnls.commons.utils.enums.ConversationEntryTypeEnum;
 import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.features.achievement.dtos.response.AchievementResponse;
+import tech.trvihnls.features.ai.services.TtsService;
 import tech.trvihnls.features.ai.services.impl.GroqServiceImpl;
+import tech.trvihnls.features.conversation.dtos.request.ConversationCreateDto;
+import tech.trvihnls.features.conversation.dtos.request.ConversationLineCreateDto;
 import tech.trvihnls.features.conversation.dtos.request.ConversationSubmitRequest;
-import tech.trvihnls.features.conversation.dtos.response.ConversationLineResponse;
-import tech.trvihnls.features.conversation.dtos.response.ConversationSubmitResponse;
-import tech.trvihnls.features.conversation.dtos.response.ConversationUserOptionResponse;
+import tech.trvihnls.features.conversation.dtos.request.ConversationUserOptionCreateDto;
+import tech.trvihnls.features.conversation.dtos.response.*;
 import tech.trvihnls.features.conversation.services.ConversationService;
+import tech.trvihnls.features.media.services.MediaUploadService;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +40,10 @@ public class ConversationServiceImpl implements ConversationService {
     private final UserRepository userRepository;
     private final UserConversationAttemptRepository userConversationAttemptRepository;
     private final AchievementRepository achievementRepository;
+    // Existing class definition and injected repositories...
+    private final ConversationRepository conversationRepository;
+    private final TtsService ttsService;
+    private final MediaUploadService mediaUploadService;
 
     @Override
     public List<ConversationLineResponse> getConversationDetail(long id) {
@@ -160,5 +170,124 @@ public class ConversationServiceImpl implements ConversationService {
         return ConversationSubmitResponse.builder()
                 .achievements(achievementResponses)
                 .build();
+    }
+
+    @Override
+    public List<ConversationListResponse> getAllConversations() {
+        List<Conversation> conversations = conversationRepository.findByOrderByDisplayOrderAsc();
+
+        return conversations.stream()
+                .map(conversation -> ConversationListResponse.builder()
+                        .id(conversation.getId())
+                        .name(conversation.getName())
+                        .displayOrder(conversation.getDisplayOrder())
+                        .imageUrl(conversation.getImageUrl())
+                        .createdAt(conversation.getCreatedAt().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                        .lineCount(conversation.getConversationLines().size())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ConversationDetailResponse getConversationById(long id) {
+        Conversation conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        List<ConversationDetailLineResponse> lines = conversation.getConversationLines().stream()
+                .map(line -> ConversationDetailLineResponse.builder()
+                        .id(line.getId())
+                        .type(line.getType())
+                        .displayOrder(line.getDisplayOrder())
+                        .systemEnglishText(line.getSystemEnglishText())
+                        .systemVietnameseText(line.getSystemVietnameseText())
+                        .systemAudioUrl(line.getSystemAudioUrl())
+                        .options(line.getConversationUserOptions().stream()
+                                .map(option -> ConversationUserOptionResponse.builder()
+                                        .englishText(option.getEnglishText())
+                                        .vietnameseText(option.getVietnameseText())
+                                        .audioUrl(option.getAudioUrl())
+                                        .gender(option.getGender().getVietnameseGender())
+                                        .build())
+                                .toList())
+                        .build())
+                .toList();
+
+        return ConversationDetailResponse.builder()
+                .id(conversation.getId())
+                .name(conversation.getName())
+                .imageUrl(conversation.getImageUrl())
+                .displayOrder(conversation.getDisplayOrder())
+                .createdAt(conversation.getUpdatedAt() == null ? conversation.getCreatedAt() : conversation.getUpdatedAt())
+                .lines(lines)
+                .build();
+    }
+
+    @Override
+    public ConversationDetailResponse createConversation(ConversationCreateDto createDto) {
+        // Create and save the conversation
+        Conversation conversation = Conversation.builder()
+                .name(createDto.getName())
+                .displayOrder(createDto.getDisplayOrder())
+                .build();
+
+        conversation = conversationRepository.save(conversation);
+
+        List<ConversationLine> lines = new ArrayList<>();
+        int displayOrder = 0;
+
+        // Process each conversation line
+        for (ConversationLineCreateDto lineDto : createDto.getLines()) {
+            ConversationLine line = ConversationLine.builder()
+                    .displayOrder(displayOrder++)
+                    .type(lineDto.getType())
+                    .conversation(conversation)
+                    .build();
+
+            // Handle system type lines with TTS
+            if (lineDto.getType().equals(ConversationEntryTypeEnum.system)) {
+                line.setSystemEnglishText(lineDto.getEnglishText());
+                line.setSystemVietnameseText(lineDto.getVietnameseText());
+
+                // Generate audio for system messages
+//                byte[] audioBytes = ttsService.requestTextToSpeech(lineDto.getEnglishText());
+//                var uploadResult = mediaUploadService.uploadAudio(audioBytes);
+                line.setSystemAudioUrl("SAMPLE_AUDIO");
+            }
+
+            // Save the line first
+            line = conversationLineRepository.save(line);
+
+            // Process user options if any
+            if (!lineDto.getOptions().isEmpty()) {
+                for (ConversationUserOptionCreateDto optionDto : lineDto.getOptions()) {
+                    // Generate audio for user options
+//                    byte[] optionAudioBytes = ttsService.requestTextToSpeech(optionDto.getEnglishText());
+//                    var optionUploadResult = mediaUploadService.uploadAudio(optionAudioBytes);
+
+                    ConversationUserOption option = ConversationUserOption.builder()
+                            .englishText(optionDto.getEnglishText())
+                            .vietnameseText(optionDto.getVietnameseText())
+                            .conversationLine(line)
+                            .gender(ConversationEntryGenderEnum.male) // Could be parameterized in DTO
+                            .audioUrl("SAMPLE_AUDIO")
+                            .build();
+
+                    conversationUserOptionRepository.save(option);
+                }
+            }
+
+            lines.add(line);
+        }
+
+        // Simply get the saved conversation with all its details
+        return getConversationById(conversation.getId());
+    }
+
+    @Override
+    public void deleteConversation(long id) {
+        Conversation conversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        conversationRepository.delete(conversation);
     }
 }
