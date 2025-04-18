@@ -7,10 +7,7 @@ import tech.trvihnls.commons.dtos.ApiResponse;
 import tech.trvihnls.commons.utils.ResponseUtils;
 import tech.trvihnls.commons.utils.enums.SuccessCodeEnum;
 import tech.trvihnls.features.excercise.dtos.request.admin.*;
-import tech.trvihnls.features.excercise.dtos.response.admin.MatchingExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.WordArrangementExerciseDetailResponse;
+import tech.trvihnls.features.excercise.dtos.response.admin.*;
 import tech.trvihnls.features.excercise.services.ExerciseService;
 
 @RestController
@@ -100,6 +97,27 @@ public class ExerciseController {
     public ResponseEntity<ApiResponse<Void>> updateWordArrangementExercise(
             @RequestBody WordArrangementExerciseUpdateRequest request) {
         exerciseService.updateWordArrangementExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @GetMapping("/dialogue/{exerciseId}")
+    public ResponseEntity<ApiResponse<DialogueExerciseDetailResponse>> getDialogueExerciseDetail(
+            @PathVariable Long exerciseId) {
+        DialogueExerciseDetailResponse response = exerciseService.getDialogueExerciseDetailResponse(exerciseId);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, response);
+    }
+
+    @PostMapping("/dialogue")
+    public ResponseEntity<ApiResponse<Void>> createDialogueExercise(
+            @RequestBody DialogueExerciseCreateRequest request) {
+        exerciseService.createDialogueExercise(request);
+        return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
+    }
+
+    @PutMapping("/dialogue")
+    public ResponseEntity<ApiResponse<Void>> updateDialogueExercise(
+            @RequestBody DialogueExerciseUpdateRequest request) {
+        exerciseService.updateDialogueExercise(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
     }
 }

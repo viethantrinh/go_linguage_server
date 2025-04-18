@@ -14,9 +14,11 @@ import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.commons.utils.enums.ExerciseTypeEnum;
 import tech.trvihnls.commons.utils.enums.LanguageEnum;
 import tech.trvihnls.commons.utils.enums.MultipleChoiceExerciseEnum;
+import tech.trvihnls.features.ai.services.TtsService;
 import tech.trvihnls.features.excercise.dtos.request.admin.*;
 import tech.trvihnls.features.excercise.dtos.response.admin.*;
 import tech.trvihnls.features.excercise.services.ExerciseService;
+import tech.trvihnls.features.media.services.MediaUploadService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +38,14 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final MultipleChoiceOptionRepository multipleChoiceOptionRepository;
     private final MatchingExerciseRepository matchingExerciseRepository;
     private final MatchingPairRepository matchingPairRepository;
-    @PersistenceContext private final EntityManager entityManager;
+    @PersistenceContext
+    private final EntityManager entityManager;
     private final WordArrangementExerciseRepository wordArrangementExerciseRepository;
     private final WordArrangementOptionRepository wordArrangementOptionRepository;
+    private final TtsService ttsService;
+    private final MediaUploadService mediaUploadService;
+    private final DialogueExerciseRepository dialogueExerciseRepository;
+    private final DialogueExerciseLineRepository dialogueExerciseLineRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
@@ -409,7 +416,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             wordRepository.findById(wordId)
                     .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
         } else if (questionType == MultipleChoiceExerciseEnum.sentence ||
-                   questionType == MultipleChoiceExerciseEnum.audio) {
+                questionType == MultipleChoiceExerciseEnum.audio) {
             if (request.getSentenceId() == null) {
                 throw new AppException(ErrorCodeEnum.BAD_REQUEST);
             }
@@ -885,6 +892,197 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         entityManager.merge(exercise);
         entityManager.merge(refreshedExercise);
+        entityManager.flush();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public DialogueExerciseDetailResponse getDialogueExerciseDetailResponse(Long exerciseId) {
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.DIALOGUE_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        DialogueExercise dialogueExercise = exercise.getDialogueExercise();
+        if (dialogueExercise == null) {
+            return DialogueExerciseDetailResponse.builder().build();
+        }
+
+        List<DialogueExerciseDetailLineResponse> lineResponses = dialogueExercise.getDialogueExerciseLines().stream()
+                .map(line -> DialogueExerciseDetailLineResponse.builder()
+                        .id(line.getId())
+                        .dialogueExerciseId(dialogueExercise.getId())
+                        .speaker(line.getSpeaker())
+                        .englishText(line.getEnglishText())
+                        .vietnameseText(line.getVietnameseText())
+                        .audioUrl(line.getAudioUrl())
+                        .displayOrder(line.getDisplayOrder())
+                        .hasBlank(line.isHasBlank())
+                        .blankWord(line.getBlankWord())
+                        .build())
+                .collect(Collectors.toList());
+
+        return DialogueExerciseDetailResponse.builder()
+                .id(dialogueExercise.getId())
+                .context(dialogueExercise.getContext())
+                .exerciseId(exercise.getId())
+                .dialogueLines(lineResponses)
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void createDialogueExercise(DialogueExerciseCreateRequest request) {
+        Long exerciseId = request.getExerciseId();
+
+        // Validate exercise exists and is of the correct type
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.DIALOGUE_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Check if a dialogue exercise already exists for this exercise
+        if (exercise.getDialogueExercise() != null) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Create dialogue exercise
+        DialogueExercise dialogueExercise = DialogueExercise.builder()
+                .context(request.getContext())
+                .exercise(exercise)
+                .dialogueExerciseLines(new ArrayList<>())
+                .build();
+
+        // Set up bidirectional relationship
+        exercise.setDialogueExercise(dialogueExercise);
+
+        // Save the dialogue exercise using its repository
+        DialogueExercise savedDialogueExercise = dialogueExerciseRepository.save(dialogueExercise);
+
+        // Create and save dialogue lines
+        if (request.getDialogueLines() != null && !request.getDialogueLines().isEmpty()) {
+            List<DialogueExerciseLine> lines = new ArrayList<>();
+
+            for (DialogueExerciseLineCreateRequest lineRequest : request.getDialogueLines()) {
+                DialogueExerciseLine line = DialogueExerciseLine.builder()
+                        .speaker(lineRequest.getSpeaker())
+                        .englishText(lineRequest.getEnglishText())
+                        .vietnameseText(lineRequest.getVietnameseText())
+                        .displayOrder(Integer.parseInt(lineRequest.getDisplayOrder()))
+                        .hasBlank(lineRequest.isHasBlank())
+                        .blankWord(lineRequest.getBlankWord())
+                        .dialogueExercise(savedDialogueExercise)
+                        // TODO: triển khai upload lên cloud sau, tạm thời như này đỡ tốn tài nguyên
+                        .audioUrl("SAMPLE_AUDIO_URL") // Temporary audio URL
+                        .build();
+
+                lines.add(line);
+            }
+
+            // Save all lines at once
+            dialogueExerciseLineRepository.saveAll(lines);
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    @Transactional
+    public void updateDialogueExercise(DialogueExerciseUpdateRequest request) {
+        Long exerciseId = request.getExerciseId();
+
+        // Validate exercise exists and is of the correct type
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        if (!Objects.equals(exercise.getExerciseType().getId(), ExerciseTypeEnum.DIALOGUE_EXERCISE.getId())) {
+            throw new AppException(ErrorCodeEnum.RESOURCE_CONFLICT);
+        }
+
+        // Check if dialogue exercise exists
+        DialogueExercise dialogueExercise = exercise.getDialogueExercise();
+        if (dialogueExercise == null) {
+            throw new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED);
+        }
+
+        // Get the existing ID before deleting
+        Long dialogueExerciseId = dialogueExercise.getId();
+
+        // Delete all lines first
+        entityManager.createNativeQuery("DELETE FROM tbl_dialogue_exercise_line WHERE dialogue_exercise_id = :id")
+                .setParameter("id", dialogueExerciseId)
+                .executeUpdate();
+
+        // Delete the dialogue exercise
+        entityManager.createNativeQuery("DELETE FROM tbl_dialogue_exercise WHERE id = :id")
+                .setParameter("id", dialogueExerciseId)
+                .executeUpdate();
+
+        // Clear persistence context
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch exercise
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        exercise.setDialogueExercise(null);
+        entityManager.merge(exercise);
+        entityManager.flush();
+
+        // Create new dialogue exercise using native SQL
+        String insertSql = "INSERT INTO tbl_dialogue_exercise (context, exercise_id, created_at) VALUES (:context, :exerciseId, NOW())";
+        entityManager.createNativeQuery(insertSql)
+                .setParameter("context", request.getContext())
+                .setParameter("exerciseId", exerciseId)
+                .executeUpdate();
+
+        entityManager.flush();
+
+        // Get new dialogue exercise
+        DialogueExercise newDialogueExercise = dialogueExerciseRepository.findById(
+                        dialogueExerciseRepository.findByExerciseIdOrderByIdDesc(exerciseId)
+                                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED))
+                                .getId())
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
+
+        // Create dialogue lines
+        if (request.getDialogueLines() != null && !request.getDialogueLines().isEmpty()) {
+            for (DialogueExerciseLineUpdateRequest lineRequest : request.getDialogueLines()) {
+                String insertLineSql = "INSERT INTO tbl_dialogue_exercise_line " +
+                        "(speaker, english_text, vietnamese_text, audio_url, display_order, has_blank, blank_word, dialogue_exercise_id, created_at) " +
+                        "VALUES (:speaker, :englishText, :vietnameseText, :audioUrl, :displayOrder, :hasBlank, :blankWord, :dialogueExerciseId, NOW())";
+
+                entityManager.createNativeQuery(insertLineSql)
+                        .setParameter("speaker", lineRequest.getSpeaker().name())
+                        .setParameter("englishText", lineRequest.getEnglishText())
+                        .setParameter("vietnameseText", lineRequest.getVietnameseText())
+                        // TODO: triển khai upload lên cloud sau, tạm thời như này đỡ tốn tài nguyên
+                        //  (check trước đó xem english text request có khác thằng đang có trong database không)
+                        .setParameter("audioUrl", "SAMPLE_AUDIO_URL")  // Temporary audio URL
+                        .setParameter("displayOrder", Integer.parseInt(lineRequest.getDisplayOrder()))
+                        .setParameter("hasBlank", lineRequest.isHasBlank())
+                        .setParameter("blankWord", lineRequest.getBlankWord())
+                        .setParameter("dialogueExerciseId", newDialogueExercise.getId())
+                        .executeUpdate();
+            }
+        }
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // Re-fetch everything to ensure clean state
+        exercise = entityManager.find(Exercise.class, exerciseId);
+        DialogueExercise refreshedDialogueExercise = entityManager.find(DialogueExercise.class, newDialogueExercise.getId());
+
+        // Ensure proper relationships
+        exercise.setDialogueExercise(refreshedDialogueExercise);
+        refreshedDialogueExercise.setExercise(exercise);
+
+        entityManager.merge(exercise);
+        entityManager.merge(refreshedDialogueExercise);
         entityManager.flush();
     }
 }

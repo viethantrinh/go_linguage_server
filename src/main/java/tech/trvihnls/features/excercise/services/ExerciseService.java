@@ -1,10 +1,7 @@
 package tech.trvihnls.features.excercise.services;
 
 import tech.trvihnls.features.excercise.dtos.request.admin.*;
-import tech.trvihnls.features.excercise.dtos.response.admin.MatchingExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.MultipleChoiceExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.VocabularyExerciseDetailResponse;
-import tech.trvihnls.features.excercise.dtos.response.admin.WordArrangementExerciseDetailResponse;
+import tech.trvihnls.features.excercise.dtos.response.admin.*;
 
 public interface ExerciseService {
     void createVocabularyExercise(VocabularyExerciseCreateRequest request);
@@ -22,4 +19,8 @@ public interface ExerciseService {
     WordArrangementExerciseDetailResponse getWordArrangementExerciseDetail(Long exerciseId);
     void createWordArrangementExercise(WordArrangementExerciseCreateRequest request);
     void updateWordArrangementExercise(WordArrangementExerciseUpdateRequest request);
+
+    DialogueExerciseDetailResponse getDialogueExerciseDetailResponse(Long exerciseId);
+    void createDialogueExercise(DialogueExerciseCreateRequest request);
+    void updateDialogueExercise(DialogueExerciseUpdateRequest request);
 }
