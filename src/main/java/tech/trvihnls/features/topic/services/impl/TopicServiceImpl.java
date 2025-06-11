@@ -18,6 +18,7 @@ import tech.trvihnls.commons.utils.enums.ErrorCodeEnum;
 import tech.trvihnls.commons.utils.enums.SpeakerEnum;
 import tech.trvihnls.features.excercise.dtos.response.*;
 import tech.trvihnls.features.lesson.dtos.response.LessonDetailResponse;
+import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
 import tech.trvihnls.features.media.services.MediaUploadService;
 import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminLessonRequest;
 import tech.trvihnls.features.topic.dtos.request.TopicCreateAdminRequest;
@@ -159,12 +160,12 @@ public class TopicServiceImpl implements TopicService {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.TOPIC_NOT_EXISTED));
 
-        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud
+        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud - đã xong
         // create new image and get back link
-//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(file);
-//        String imageUrl = cloudinaryUrlResponse.getSecureUrl();
+        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(file);
+        String imageUrl = cloudinaryUrlResponse.getSecureUrl();
 
-        String imageUrl = "SAMPLE";
+//        String imageUrl = "SAMPLE";
 
         // set to topic
         topic.setImageUrl(imageUrl);

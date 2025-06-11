@@ -19,7 +19,7 @@ import java.util.Map;
 public class SunoServiceImpl implements SunoService {
     // Replace with your actual values
     private static final String API_BASE_URL = "https://apibox.erweima.ai"; // Or your deployed Suno API endpoint
-    private static final String API_KEY = "e34cff2c521c635cb5f3f62773ce5b4b"; // Replace with your actual API key
+    private static final String API_KEY = "12c23d30edb9437132615ded67425f10"; // Replace with your actual API key
     private final RestTemplate restTemplate;
     private final HttpHeaders headers;
     private final SongRepository songRepository;

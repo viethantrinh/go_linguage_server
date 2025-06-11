@@ -41,7 +41,7 @@ public class CloudinaryMediaUploadServiceImpl implements MediaUploadService {
 
         Map result;
         try {
-            result = cloudinary.uploader().upload(multipartFile, cloudinaryUploadOptions);
+            result = cloudinary.uploader().upload(multipartFile.getBytes(), cloudinaryUploadOptions);
         } catch (IOException e) {
             throw new AppException(ErrorCodeEnum.UPLOAD_RESOURCE_FAILED);
         }

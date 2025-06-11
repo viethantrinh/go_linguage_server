@@ -112,9 +112,9 @@ VALUES -- 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
 -- USER_LESSON_ATTEMPT DATA
 INSERT INTO tbl_user_lesson_attempt (user_id, lesson_id, xp_points_earned, go_points_earned, created_at, updated_at)
 VALUES
-    (1, 1, 2, 150, now(), null),
-    (1, 2, 3, 200, now() + interval '1 hour', null),
-    (1, 8, 1, 100, now() + interval '3 hour', null)
+    (1, 1, 2, 150, now(), null);
+--     (1, 2, 3, 200, now() + interval '1 hour', null),
+--     (1, 8, 1, 100, now() + interval '3 hour', null)
     ;
 
 -- ===================================== LEARNING MATERIAL ===================================== --

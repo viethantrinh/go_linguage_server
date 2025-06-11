@@ -109,7 +109,7 @@ public class ExerciseController {
 
     @PostMapping("/dialogue")
     public ResponseEntity<ApiResponse<Void>> createDialogueExercise(
-            @RequestBody DialogueExerciseCreateRequest request) {
+                    @RequestBody DialogueExerciseCreateRequest request) {
         exerciseService.createDialogueExercise(request);
         return ResponseUtils.success(SuccessCodeEnum.GENERAL_SUCCESS, null);
     }

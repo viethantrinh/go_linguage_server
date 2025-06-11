@@ -249,9 +249,9 @@ public class ConversationServiceImpl implements ConversationService {
                 line.setSystemVietnameseText(lineDto.getVietnameseText());
 
                 // Generate audio for system messages
-//                byte[] audioBytes = ttsService.requestTextToSpeech(lineDto.getEnglishText());
-//                var uploadResult = mediaUploadService.uploadAudio(audioBytes);
-                line.setSystemAudioUrl("SAMPLE_AUDIO");
+                byte[] audioBytes = ttsService.requestTextToSpeech(lineDto.getEnglishText());
+                var uploadResult = mediaUploadService.uploadAudio(audioBytes);
+                line.setSystemAudioUrl(uploadResult.getSecureUrl());
             }
 
             // Save the line first
@@ -261,15 +261,15 @@ public class ConversationServiceImpl implements ConversationService {
             if (!lineDto.getOptions().isEmpty()) {
                 for (ConversationUserOptionCreateDto optionDto : lineDto.getOptions()) {
                     // Generate audio for user options
-//                    byte[] optionAudioBytes = ttsService.requestTextToSpeech(optionDto.getEnglishText());
-//                    var optionUploadResult = mediaUploadService.uploadAudio(optionAudioBytes);
+                    byte[] optionAudioBytes = ttsService.requestTextToSpeech(optionDto.getEnglishText());
+                    var optionUploadResult = mediaUploadService.uploadAudio(optionAudioBytes);
 
                     ConversationUserOption option = ConversationUserOption.builder()
                             .englishText(optionDto.getEnglishText())
                             .vietnameseText(optionDto.getVietnameseText())
                             .conversationLine(line)
                             .gender(ConversationEntryGenderEnum.male) // Could be parameterized in DTO
-                            .audioUrl("SAMPLE_AUDIO")
+                            .audioUrl(optionUploadResult.getSecureUrl())
                             .build();
 
                     conversationUserOptionRepository.save(option);

@@ -148,6 +148,17 @@ public class MainServiceImpl implements MainService {
                 .mapToInt(lesson -> lessonXPMap.getOrDefault(lesson.getId(), 0))
                 .sum();
 
+        if (!topic.isPremium()) {
+            return TopicResponse.builder()
+                    .id(topic.getId())
+                    .name(topic.getName())
+                    .imageUrl(topic.getImageUrl())
+                    .displayOrder(topic.getDisplayOrder())
+                    .isPremium(topic.isPremium())
+                    .totalUserXPPoints(topicTotalXp)
+                    .build();
+        }
+
         // Topics 1 and 2 are always free, others require subscription
         boolean isPremium = topic.getId() != 1 && topic.getId() != 2 && !isUserSubscribed;
 

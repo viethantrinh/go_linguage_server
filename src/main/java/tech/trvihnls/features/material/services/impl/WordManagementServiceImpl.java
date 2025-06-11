@@ -162,12 +162,12 @@ public class WordManagementServiceImpl implements WordManagementService {
         Word word = wordRepository.findById(wordId)
                 .orElseThrow(() -> new AppException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
 
-        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud
+        // TODO: chỉnh lại sau cho đỡ tốn tài nguyên cloud - đã xong
         // create new image and get back link
-//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(file);
-//        String imageUrl = cloudinaryUrlResponse.getSecureUrl();
+        CloudinaryUrlResponse cloudinaryUrlResponse = cloudinaryMediaUploadServiceImpl.uploadImage(file, 128, 128);
+        String imageUrl = cloudinaryUrlResponse.getSecureUrl();
 
-        String imageUrl = "SAMPLE_IMAGE_URL";
+//        String imageUrl = "SAMPLE_IMAGE_URL";
 
         // set to topic
         word.setImageUrl(imageUrl);

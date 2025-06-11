@@ -18,10 +18,12 @@ import tech.trvihnls.features.ai.services.TtsService;
 import tech.trvihnls.features.excercise.dtos.request.admin.*;
 import tech.trvihnls.features.excercise.dtos.response.admin.*;
 import tech.trvihnls.features.excercise.services.ExerciseService;
+import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
 import tech.trvihnls.features.media.services.MediaUploadService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -969,6 +971,13 @@ public class ExerciseServiceImpl implements ExerciseService {
             List<DialogueExerciseLine> lines = new ArrayList<>();
 
             for (DialogueExerciseLineCreateRequest lineRequest : request.getDialogueLines()) {
+                // Using tts service from eleven lab to get the audio file from english text
+                byte[] audioBytes = ttsService.requestTextToSpeech(lineRequest.getEnglishText());
+
+                // Upload the audio file to cloudinary
+                CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(audioBytes);
+                String audioUrl = cloudinaryUrlResponse.getSecureUrl();
+
                 DialogueExerciseLine line = DialogueExerciseLine.builder()
                         .speaker(lineRequest.getSpeaker())
                         .englishText(lineRequest.getEnglishText())
@@ -977,8 +986,8 @@ public class ExerciseServiceImpl implements ExerciseService {
                         .hasBlank(lineRequest.isHasBlank())
                         .blankWord(lineRequest.getBlankWord())
                         .dialogueExercise(savedDialogueExercise)
-                        // TODO: triển khai upload lên cloud sau, tạm thời như này đỡ tốn tài nguyên
-                        .audioUrl("SAMPLE_AUDIO_URL") // Temporary audio URL
+                        // TODO: triển khai upload lên cloud sau, tạm thời như này đỡ tốn tài nguyên - đã xong
+                        .audioUrl(audioUrl) // Temporary audio URL
                         .build();
 
                 lines.add(line);
@@ -1008,6 +1017,12 @@ public class ExerciseServiceImpl implements ExerciseService {
         if (dialogueExercise == null) {
             throw new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED);
         }
+
+        // Store existing dialogue lines for comparison before deletion
+        List<DialogueExerciseLine> existingLines = dialogueExercise.getDialogueExerciseLines();
+        // Create a map of english text to audio URL for quick lookup
+        Map<String, String> existingAudioMap = existingLines.stream()
+                .collect(Collectors.toMap(DialogueExerciseLine::getEnglishText, DialogueExerciseLine::getAudioUrl, (a, b) -> a));
 
         // Get the existing ID before deleting
         Long dialogueExerciseId = dialogueExercise.getId();
@@ -1051,17 +1066,36 @@ public class ExerciseServiceImpl implements ExerciseService {
         // Create dialogue lines
         if (request.getDialogueLines() != null && !request.getDialogueLines().isEmpty()) {
             for (DialogueExerciseLineUpdateRequest lineRequest : request.getDialogueLines()) {
+                // TODO: đẩy lên cloud = đã xong
+                String englishText = lineRequest.getEnglishText();
+                String audioUrl;
+
+                // Check if the English text existed in the previous version and reuse the audio URL if unchanged
+                if (existingAudioMap.containsKey(englishText) && !existingAudioMap.get(englishText).equals("SAMPLE_AUDIO_URL")) {
+                    audioUrl = existingAudioMap.get(englishText);
+                } else {
+                    // Generate new audio for the English text
+                    try {
+                        byte[] audioBytes = ttsService.requestTextToSpeech(englishText);
+                        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(audioBytes);
+                        audioUrl = cloudinaryUrlResponse.getSecureUrl();
+                    } catch (Exception e) {
+                        // If there's any error during TTS or upload, fall back to sample URL
+                        audioUrl = "SAMPLE_AUDIO_URL";
+                    }
+                }
+
                 String insertLineSql = "INSERT INTO tbl_dialogue_exercise_line " +
                         "(speaker, english_text, vietnamese_text, audio_url, display_order, has_blank, blank_word, dialogue_exercise_id, created_at) " +
                         "VALUES (:speaker, :englishText, :vietnameseText, :audioUrl, :displayOrder, :hasBlank, :blankWord, :dialogueExerciseId, NOW())";
 
+
                 entityManager.createNativeQuery(insertLineSql)
                         .setParameter("speaker", lineRequest.getSpeaker().name())
-                        .setParameter("englishText", lineRequest.getEnglishText())
+                        .setParameter("englishText", englishText)
                         .setParameter("vietnameseText", lineRequest.getVietnameseText())
-                        // TODO: triển khai upload lên cloud sau, tạm thời như này đỡ tốn tài nguyên
                         //  (check trước đó xem english text request có khác thằng đang có trong database không)
-                        .setParameter("audioUrl", "SAMPLE_AUDIO_URL")  // Temporary audio URL
+                        .setParameter("audioUrl", audioUrl)  // Temporary audio URL
                         .setParameter("displayOrder", Integer.parseInt(lineRequest.getDisplayOrder()))
                         .setParameter("hasBlank", lineRequest.isHasBlank())
                         .setParameter("blankWord", lineRequest.getBlankWord())

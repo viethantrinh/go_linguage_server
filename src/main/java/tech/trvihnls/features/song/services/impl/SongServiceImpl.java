@@ -12,6 +12,7 @@ import tech.trvihnls.commons.utils.enums.SongCreationStatusEnum;
 import tech.trvihnls.features.ai.services.GroqService;
 import tech.trvihnls.features.ai.services.SunoService;
 import tech.trvihnls.features.ai.services.WhisperAlignmentService;
+import tech.trvihnls.features.media.dtos.response.CloudinaryUrlResponse;
 import tech.trvihnls.features.media.services.MediaUploadService;
 import tech.trvihnls.features.song.dtos.request.SongCreateRequest;
 import tech.trvihnls.features.song.dtos.response.*;
@@ -182,10 +183,10 @@ public class SongServiceImpl implements SongService {
     public SongAfterUploadToCloudinaryResponse uploadSongToCloudinary(Long songId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCodeEnum.LEARNING_MATERIAL_NOT_EXISTED));
-        // TODO: tắt để test
-//        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(song.getAudioUrl());
-//        song.setAudioUrl(cloudinaryUrlResponse.getSecureUrl());
-        song.setAudioUrl("SAMPLE_URL");
+        // TODO: tắt để test - đã xong
+        CloudinaryUrlResponse cloudinaryUrlResponse = mediaUploadService.uploadAudio(song.getAudioUrl());
+        song.setAudioUrl(cloudinaryUrlResponse.getSecureUrl());
+//        song.setAudioUrl("SAMPLE_URL");
         song.setCreationStatus(SongCreationStatusEnum.completed);
         Song savedSong = songRepository.save(song);
         return SongAfterUploadToCloudinaryResponse.builder()
