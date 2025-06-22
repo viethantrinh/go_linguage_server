@@ -19,7 +19,7 @@ import java.util.Map;
 public class SunoServiceImpl implements SunoService {
     // Replace with your actual values
     private static final String API_BASE_URL = "https://apibox.erweima.ai"; // Or your deployed Suno API endpoint
-    private static final String API_KEY = "12c23d30edb9437132615ded67425f10"; // Replace with your actual API key
+    private static final String API_KEY = "b0b0f9da0cae379ca33a3bd71505e2c2"; // Replace with your actual API key
     private final RestTemplate restTemplate;
     private final HttpHeaders headers;
     private final SongRepository songRepository;
@@ -115,7 +115,7 @@ public class SunoServiceImpl implements SunoService {
                 if (statusResponse.getData().getStatus().equals("FIRST_SUCCESS") || statusResponse.getData().getStatus().equals("SUCCESS")) {
                     Song songBySunoTaskId = songRepository.findBySunoTaskId(statusResponse.getData().getTaskId());
                     songBySunoTaskId.setCreationStatus(SongCreationStatusEnum.audio_processed);
-                    songBySunoTaskId.setAudioUrl(statusResponse.getData().getResponse().getSunoData().get(0).getAudioUrl());
+                    songBySunoTaskId.setAudioUrl(statusResponse.getData().getResponse().getSunoData().get(1).getAudioUrl());
                     songRepository.save(songBySunoTaskId);
                     return true;
                 }
